@@ -2,30 +2,145 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import CountrySelector from "@/components/CountrySelector";
+import { getCountry } from "@/constants/countries";
+import { API_ENDPOINTS } from "@/constants/endpoints";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     referralCode: "",
+    countryCode: "+1",
+    countryIso: "US",
     phone: "",
     message: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const currentCountry = getCountry(formData.countryIso);
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, currentCountry.maxLength);
+    setFormData((prev) => ({ ...prev, phone: digitsOnly }));
+    if (error) setError(null);
+  };
+
+  const handlePhoneKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const allowedKeys = [
+      "Backspace",
+      "Delete",
+      "ArrowLeft",
+      "ArrowRight",
+      "Tab",
+      "Enter",
+      "Home",
+      "End",
+    ];
+    if (allowedKeys.includes(e.key) || e.ctrlKey || e.metaKey) return;
+    if (!/^[0-9]$/.test(e.key)) {
+      e.preventDefault();
+      return;
+    }
+
+    const target = e.target as HTMLInputElement;
+    const hasSelection =
+      target.selectionStart !== null &&
+      target.selectionEnd !== null &&
+      target.selectionEnd - target.selectionStart > 0;
+
+    if (formData.phone.length >= currentCountry.maxLength && !hasSelection) {
+      e.preventDefault();
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({
-        name: "",
-        email: "",
-        referralCode: "",
-        phone: "",
-        message: "",
+    setError(null);
+
+    const trimmedName = formData.name.trim();
+    const trimmedEmail = formData.email.trim();
+    const trimmedReferral = formData.referralCode.trim();
+    const trimmedPhone = formData.phone.trim();
+    const trimmedMessage = formData.message.trim();
+
+    if (!trimmedName) {
+      setError("Please enter your name");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setError("Please provide a valid email address");
+      return;
+    }
+
+    if (!trimmedPhone) {
+      setError("Please enter your phone number");
+      return;
+    }
+
+    if (trimmedPhone.length < currentCountry.minLength) {
+      setError(
+        currentCountry.minLength === currentCountry.maxLength
+          ? `Please enter a valid ${currentCountry.maxLength}-digit phone number for ${currentCountry.name}`
+          : `Please enter a valid phone number (${currentCountry.minLength}-${currentCountry.maxLength} digits) for ${currentCountry.name}`
+      );
+      return;
+    }
+
+    if (!trimmedMessage) {
+      setError("Please enter a message");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const res = await fetch(API_ENDPOINTS.CONTACT_US, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: trimmedName,
+          email: trimmedEmail,
+          referralCode: trimmedReferral || null,
+          countryCode: formData.countryCode,
+          phone: trimmedPhone,
+          message: trimmedMessage,
+        }),
       });
-    }, 4500);
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || "Failed to submit contact form");
+        setLoading(false);
+        return;
+      }
+
+      setSubmitted(true);
+      setLoading(false);
+      setTimeout(() => {
+        setSubmitted(false);
+        setFormData({
+          name: "",
+          email: "",
+          referralCode: "",
+          countryCode: "+1",
+          countryIso: "US",
+          phone: "",
+          message: "",
+        });
+      }, 4500);
+    } catch (err) {
+      console.error("Contact submission error:", err);
+      setError("Network error. Please try again later.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -186,7 +301,17 @@ export default function ContactPage() {
             </div>
 
             {/* Right Column: White Contact Form Card (6 cols on lg) */}
-            <div className="lg:col-span-6 bg-white rounded-[26px] sm:rounded-[32px] p-6 sm:p-8 md:p-9 shadow-lg">
+            <div className="relative lg:col-span-6 bg-white rounded-[26px] sm:rounded-[32px] p-6 sm:p-8 md:p-9 shadow-lg overflow-hidden">
+              {/* Form Submission Overlay Loading */}
+              {loading && (
+                <div className="absolute inset-0 bg-white/85 backdrop-blur-[2px] z-30 flex flex-col items-center justify-center gap-3 animate-[fadeIn_0.2s_ease-out]">
+                  <div className="w-10 h-10 border-3 border-[#084824]/25 border-t-[#084824] rounded-full animate-spin" />
+                  <p className="font-['Outfit'] font-bold text-sm text-[#084824]">
+                    Submitting your message...
+                  </p>
+                </div>
+              )}
+
               {submitted ? (
                 <div className="py-12 text-center">
                   <div className="w-12 h-12 rounded-full bg-[#084824]/15 text-[#084824] flex items-center justify-center mx-auto mb-3 text-2xl font-bold">
@@ -201,6 +326,16 @@ export default function ContactPage() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="flex flex-col">
+                  {/* Error Message */}
+                  {error && (
+                    <div className="mb-3.5 rounded-[12px] bg-red-50 border border-red-200 px-3.5 py-2.5 text-red-600 text-xs font-['Manrope'] flex items-center gap-2">
+                      <svg className="w-4 h-4 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>{error}</span>
+                    </div>
+                  )}
+
                   {/* Name */}
                   <div>
                     <label
@@ -243,13 +378,77 @@ export default function ContactPage() {
                     />
                   </div>
 
+                  {/* Phone Number with CountrySelector */}
+                  <div className="mt-3.5">
+                    <label
+                      htmlFor="form-phone"
+                      className="font-['Outfit'] font-bold text-xs sm:text-[13px] text-zinc-900 block mb-1"
+                    >
+                      Phone Number
+                    </label>
+                    <div className="flex gap-2">
+                      <CountrySelector
+                        value={formData.countryCode}
+                        selectedCode={formData.countryIso}
+                        onChange={(country) => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            countryCode: country.dialCode,
+                            countryIso: country.code,
+                            phone: prev.phone.slice(0, country.maxLength),
+                          }));
+                          if (error) setError(null);
+                        }}
+                      />
+
+                      <div className="relative flex-1 min-w-0 flex items-center">
+                        <input
+                          id="form-phone"
+                          type="tel"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          maxLength={currentCountry.maxLength}
+                          required
+                          value={formData.phone}
+                          onChange={handlePhoneChange}
+                          onKeyDown={handlePhoneKeyDown}
+                          className="w-full rounded-[12px] bg-[#eeeeee] border-0 pl-3.5 pr-11 py-2.5 text-zinc-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#084824]/40 transition-all"
+                          placeholder="Enter phone number"
+                        />
+                        <div className="absolute right-3 flex items-center pointer-events-none select-none">
+                          {formData.phone.length === currentCountry.maxLength ? (
+                            <div className="w-4.5 h-4.5 rounded-full bg-[#199250] text-white flex items-center justify-center shadow-xs">
+                              <svg
+                                className="w-2.5 h-2.5"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="3"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M5 13l4 4L19 7"
+                                />
+                              </svg>
+                            </div>
+                          ) : (
+                            <span className="text-[10px] sm:text-[11px] font-mono text-zinc-400">
+                              {formData.phone.length}/{currentCountry.maxLength}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Referral code (optional) */}
                   <div className="mt-3.5">
                     <label
                       htmlFor="form-referral"
                       className="font-['Outfit'] font-bold text-xs sm:text-[13px] text-zinc-900 block mb-1"
                     >
-                      Referral code (optional)
+                      Referral Code <span className="font-normal text-zinc-400 text-[11px]">(Optional)</span>
                     </label>
                     <input
                       id="form-referral"
@@ -261,28 +460,8 @@ export default function ContactPage() {
                           referralCode: e.target.value,
                         })
                       }
-                      className="w-full rounded-[12px] bg-[#eeeeee] border-0 px-3.5 py-2.5 text-zinc-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#084824]/40 transition-all"
-                      placeholder=""
-                    />
-                  </div>
-
-                  {/* Phone Number */}
-                  <div className="mt-3.5">
-                    <label
-                      htmlFor="form-phone"
-                      className="font-['Outfit'] font-bold text-xs sm:text-[13px] text-zinc-900 block mb-1"
-                    >
-                      Phone Number
-                    </label>
-                    <input
-                      id="form-phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) =>
-                        setFormData({ ...formData, phone: e.target.value })
-                      }
-                      className="w-full rounded-[12px] bg-[#eeeeee] border-0 px-3.5 py-2.5 text-zinc-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#084824]/40 transition-all"
-                      placeholder=""
+                      className="w-full rounded-[12px] bg-[#eeeeee] border-0 px-3.5 py-2.5 text-zinc-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#084824]/40 transition-all placeholder:text-zinc-400"
+                      placeholder="Enter referral code"
                     />
                   </div>
 
@@ -311,9 +490,16 @@ export default function ContactPage() {
                   <div className="mt-5 flex justify-center">
                     <button
                       type="submit"
-                      className="rounded-full border border-[#084824] bg-white px-9 py-2 text-[#084824] font-['Outfit'] font-bold text-xs sm:text-sm hover:bg-[#084824] hover:text-white transition-all shadow-xs cursor-pointer active:scale-95"
+                      disabled={loading}
+                      className="rounded-full border border-[#084824] bg-white px-9 py-2 text-[#084824] font-['Outfit'] font-bold text-xs sm:text-sm hover:bg-[#084824] hover:text-white transition-all shadow-xs cursor-pointer active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
                     >
-                      Submit
+                      {loading && (
+                        <svg className="animate-spin h-3.5 w-3.5 text-[#084824]" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                      )}
+                      <span>{loading ? "Submitting..." : "Submit"}</span>
                     </button>
                   </div>
                 </form>
