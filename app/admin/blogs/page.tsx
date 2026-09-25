@@ -255,7 +255,7 @@ export default function BlogsListPage() {
             <table className="w-full text-left border-collapse font-['Manrope'] text-xs sm:text-sm">
               <thead>
                 <tr className="bg-zinc-50/90 border-b border-zinc-200 text-zinc-500 uppercase text-[11px] font-semibold tracking-wider">
-                  <th className="py-3.5 px-4 sm:px-6">Article</th>
+                  <th className="py-3.5 px-4 sm:px-6">Blog</th>
                   <th className="py-3.5 px-4">Slug</th>
                   <th className="py-3.5 px-4">Date</th>
                   <th className="py-3.5 px-4">SEO</th>
