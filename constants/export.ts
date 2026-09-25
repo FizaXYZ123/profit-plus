@@ -46,9 +46,6 @@ export const COLORS = {
 
 export const NAV_LINKS = [
   { label: "Home", href: "/" },
-  { label: "About Software", href: "/about" },
-  { label: "About Company", href: "/about" },
-  { label: "Success Story", href: "/portfolio" },
   { label: "About Software", href: "/about-software" },
   { label: "About Company", href: "/about" },
   { label: "Success Story", href: "/success-story" },

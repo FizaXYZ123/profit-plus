@@ -32,7 +32,7 @@ export default function Navbar() {
         {/* Center/Right Nav Links with Proper Routing */}
         <div className="flex items-center gap-4 sm:gap-6 lg:gap-8">
           <ul className="hidden lg:flex items-center gap-6 xl:gap-8 font-['Manrope'] font-medium text-sm text-zinc-700">
-            {NAV_LINKS.map((item) => {
+            {NAV_LINKS.map((item, idx) => {
               const isActive =
                 item.href === "/"
                   ? pathname === "/"
@@ -42,7 +42,7 @@ export default function Navbar() {
                       (pathname === "/success-story" || pathname === "/portfolio"));
 
               return (
-                <li key={item.label}>
+                <li key={idx}>
                   <Link
                     href={item.href}
                     className={`relative py-1 whitespace-nowrap transition-colors duration-200 hover:text-[#199250] ${
