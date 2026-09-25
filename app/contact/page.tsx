@@ -31,7 +31,7 @@ export default function ContactPage() {
   return (
     <div className="w-full flex-1 flex flex-col bg-[#032010] selection:bg-[#199250] selection:text-white overflow-x-hidden">
       {/* Main Hero & Card Section */}
-      <section className="relative pt-32 sm:pt-36 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8 flex-1 flex flex-col items-center">
+      <section className="relative pt-32 sm:pt-36 pb-28 sm:pb-36 lg:pb-40 px-4 sm:px-6 lg:px-8 flex-1 flex flex-col items-center">
         {/* Wireframe Network Globe (public/contact-bg.png) behind content */}
         <div className="absolute top-28 sm:top-32 left-1/2 -translate-x-1/2 w-[620px] sm:w-[820px] md:w-[980px] h-[340px] sm:h-[440px] pointer-events-none select-none z-0 opacity-80">
           <Image

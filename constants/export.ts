@@ -17,6 +17,10 @@ export const IMAGES = {
   curvedMonitor: "/curved-monitor.webp",
   contactBgArches: "/contact-bg-arches.webp",
   arrow: "/arrow.webp",
+  laptop: "/laptop.png",
+  candleSoftware: "/candle-softwear.png",
+  candleSoftware2: "/candle-softwear2.png",
+  aiBot: "/Ai.png",
 } as const;
 
 export const COLORS = {
@@ -45,6 +49,9 @@ export const NAV_LINKS = [
   { label: "About Software", href: "/about" },
   { label: "About Company", href: "/about" },
   { label: "Success Story", href: "/portfolio" },
+  { label: "About Software", href: "/about-software" },
+  { label: "About Company", href: "/about" },
+  { label: "Success Story", href: "/success-story" },
   { label: "Contact Us", href: "/contact" },
 ] as const;
 

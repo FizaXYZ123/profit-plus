@@ -38,7 +38,7 @@ export default function RootLayout({
       lang="en"
       className={`${outfit.variable} ${manrope.variable} scroll-smooth antialiased`}
     >
-      <body className="min-h-screen bg-[#031c0e] text-white flex flex-col font-['Manrope'] selection:bg-[#199250] selection:text-white">
+      <body className="min-h-screen bg-white text-white flex flex-col font-['Manrope'] selection:bg-[#199250] selection:text-white">
         {/* Persistent Floating Navbar */}
         <Navbar />
 

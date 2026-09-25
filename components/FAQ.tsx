@@ -6,33 +6,33 @@ import Accordion, { AccordionItemData } from "./Accordion";
 const FAQ_DATA: AccordionItemData[] = [
   {
     id: "faq-1",
-    question: "What is ProfitPlus?",
+    question: "What is ProfitPlus and how does it work?",
     answer:
-      "ProfitPlus is an advanced automated futures trading platform that helps traders automate, copy, and manage trades across multiple accounts with speed, discipline, and precision.",
+      "ProfitPlus is an advanced automated futures trading platform designed to streamline strategy execution, multi-account trade replication, and risk management. It connects directly with leading trading platforms (like NinjaTrader®) via secure APIs to execute trades automatically based on your customized rules, eliminating emotional bias and manual delay.",
   },
   {
     id: "faq-2",
     question: "How does ProfitPlus automate futures trading?",
     answer:
-      "ProfitPlus connects with top trading platforms like NinjaTrader® via secure APIs. Once your configured strategy conditions are met, trades are executed automatically without manual screen-time or emotional hesitation.",
+      "ProfitPlus monitors market conditions in real time using your configured technical strategies and rules. Once your predetermined entry, target, or stop-loss criteria are fulfilled, orders are triggered and placed instantly without needing constant manual screen monitoring.",
   },
   {
     id: "faq-3",
-    question: "Can I copy trades to multiple accounts at the same time?",
+    question: "Can ProfitPlus manage and copy trades across multiple accounts?",
     answer:
-      "Yes. ProfitPlus features powerful multi-account trade replication. You can execute trades on a lead account and have them mirrored across all connected accounts in real time with custom contract sizing.",
+      "Yes. ProfitPlus features ultra-fast multi-account trade replication. You can execute orders on a primary lead account and have them mirrored across all connected follower accounts in real time with custom contract sizing and risk ratios.",
   },
   {
     id: "faq-4",
-    question: "Is ProfitPlus suitable for both beginners and experienced traders?",
+    question: "Is ProfitPlus suitable for beginners as well as professional traders?",
     answer:
-      "Yes. Beginners can take advantage of straightforward setup, built-in risk controls, and practice simulation tools, while experienced traders benefit from flexible controls, custom strategy settings, and high-speed execution.",
+      "Yes. Beginners can take advantage of our straightforward guided onboarding, pre-configured safety rules, and paper/simulation mode. Professional traders benefit from granular order routing, multi-account scalability, and high-frequency execution precision.",
   },
   {
     id: "faq-5",
-    question: "Does ProfitPlus guarantee trading profits?",
+    question: "Why should traders choose ProfitPlus for futures trading automation?",
     answer:
-      "No platform can guarantee profits as futures trading carries market risk. ProfitPlus provides the technological tools to automate execution, reduce human error, and enforce disciplined trading strategies.",
+      "Traders choose ProfitPlus for its rock-solid reliability, sub-millisecond execution speed, comprehensive multi-account management, and responsive technical support—giving you the edge to trade with discipline, consistency, and confidence.",
   },
 ];
 
@@ -44,7 +44,7 @@ export default function FAQ() {
     >
       <div className="max-w-4xl mx-auto">
         {/* Section Heading */}
-        <h2 className="font-['Outfit'] font-black text-2xl sm:text-3xl md:text-[38px] text-[#111827] tracking-tight text-center mb-8 sm:mb-12">
+        <h2 className="font-['Outfit'] font-bold text-2xl sm:text-3xl md:text-[34px] text-[#111827] tracking-tight text-center mb-8 sm:mb-10">
           Frequently Asked Questions
         </h2>
 

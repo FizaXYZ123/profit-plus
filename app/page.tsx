@@ -33,6 +33,9 @@ export default function Home() {
 
       {/* Dark Green Section: "Contact Us" with Curved Monitor & Candlestick Background */}
       <ContactUs />
+
+      {/* Dedicated White Gap separating ContactUs from Footer exactly matching user design */}
+      <div className="w-full bg-white h-24 sm:h-32 md:h-40" aria-hidden="true" />
     </>
   );
 }
