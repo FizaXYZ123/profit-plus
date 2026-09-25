@@ -29,35 +29,38 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="w-full flex-1 flex flex-col bg-[#032010] selection:bg-[#199250] selection:text-white overflow-x-hidden">
+    <div className="w-full flex-1 flex flex-col bg-white selection:text-white overflow-x-hidden items-center">
       {/* Main Hero & Card Section */}
-      <section className="relative pt-32 sm:pt-36 pb-28 sm:pb-36 lg:pb-40 px-4 sm:px-6 lg:px-8 flex-1 flex flex-col items-center">
-        {/* Wireframe Network Globe (public/contact-bg.png) behind content */}
-        <div className="absolute top-28 sm:top-32 left-1/2 -translate-x-1/2 w-[620px] sm:w-[820px] md:w-[980px] h-[340px] sm:h-[440px] pointer-events-none select-none z-0 opacity-80">
-          <Image
-            src="/contact-bg.png"
-            alt="Global Network Wireframe"
-            fill
-            className="object-contain object-top"
-            priority
-            unoptimized
-          />
-        </div>
-
+      <section className="relative pt-32 sm:pt-36 lg:pt-40 px-4 sm:px-6 lg:px-8 flex-1 w-full flex flex-col items-center bg-[#032010]">
         {/* Section Heading & Subtitle */}
-        <div className="relative z-10 text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-          <h1 className="font-['Outfit'] font-black text-3xl sm:text-5xl md:text-[54px] text-white tracking-tight">
+        <div className="relative z-10 text-center max-w-4xl mx-auto mb-8 sm:mb-12">
+          <h1 className="font-['Outfit'] font-black text-3xl sm:text-5xl md:text-[54px] lg:text-[65px] text-white tracking-tight">
             Contact <span className="text-zinc-300">Us</span>
           </h1>
-          <p className="font-['Manrope'] text-zinc-300 text-xs sm:text-sm md:text-[15px] font-normal mt-2.5 sm:mt-3 leading-relaxed">
+          <p className="font-['Manrope'] text-zinc-300 text-xs sm:text-sm md:text-[15px] lg:text-[25px] font-normal mt-2.5 sm:mt-3 leading-relaxed">
             Whether you have questions, feedback, or need support we&apos;re here to help.
           </p>
         </div>
 
-        {/* The Mint Green Container Card matching user reference image */}
+        {/* Wireframe Network Globe (public/contact-bg.png) behind content */}
+        <div className="w-[620px] sm:w-[820px] md:w-[980px] h-[340px] sm:h-[340px] pointer-events-none select-none z-0 opacity-80">
+          <Image
+            src="/contact-hero.webp"
+            alt="Global Network Wireframe"
+            width={1100}
+            height={600}
+            className="object-cover w-full h-full object-top"
+            unoptimized
+            priority
+          />
+        </div>
+
+      </section>
+      {/* The Mint Green Container Card matching user reference image */}
+      <section className="-mt-60 lg:-mt-28 pb-20 md:pb-28 relative">
         <div
-          className="relative z-10 w-full max-w-5xl rounded-[32px] sm:rounded-[42px] p-6 sm:p-10 md:p-12 lg:p-14 shadow-2xl"
-          style={{ backgroundColor: "#8fdcb7" }}
+          className="relative z-10 w-full max-w-6xl rounded-[32px] bg-[#8fdcb7] sm:rounded-[42px] p-6 sm:p-10 md:p-12 lg:p-14 shadow-2xl "
+
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             {/* Left Column: Info & Socials (5.5 cols on lg) */}
@@ -111,14 +114,14 @@ export default function ContactPage() {
                   <div className="flex items-center gap-4 text-zinc-950">
                     {/* Facebook */}
                     <a
-                      href="https://facebook.com"
+                      href="https://www.facebook.com/profit.plus"
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Facebook"
                       className="w-7 h-7 flex items-center justify-center hover:text-[#084824] hover:scale-110 transition-transform"
                     >
                       <svg
-                        className="w-4.5 h-4.5 fill-current"
+                        className="w-6 h-6 fill-current"
                         viewBox="0 0 24 24"
                       >
                         <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
@@ -127,14 +130,14 @@ export default function ContactPage() {
 
                     {/* TikTok */}
                     <a
-                      href="https://tiktok.com"
+                      href="https://www.tiktok.com/@officialprofitplus"
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="TikTok"
                       className="w-7 h-7 flex items-center justify-center hover:text-[#084824] hover:scale-110 transition-transform"
                     >
                       <svg
-                        className="w-4 h-4 fill-current"
+                        className="w-6 h-6 fill-current"
                         viewBox="0 0 24 24"
                       >
                         <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.85.12V9.32a6.34 6.34 0 0 0-.85-.06A6.34 6.34 0 0 0 3 15.6a6.34 6.34 0 0 0 10.82 4.48c1.37-1.37 2.07-3.1 2.07-5.18V8.71a8.28 8.28 0 0 0 4.7 1.48v-3.5z" />
@@ -143,14 +146,14 @@ export default function ContactPage() {
 
                     {/* Instagram */}
                     <a
-                      href="https://instagram.com"
+                      href="https://www.instagram.com/pro.fitplus"
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Instagram"
                       className="w-7 h-7 flex items-center justify-center hover:text-[#084824] hover:scale-110 transition-transform"
                     >
                       <svg
-                        className="w-4.5 h-4.5 fill-none stroke-current"
+                        className="w-6 h-6 fill-none stroke-current"
                         viewBox="0 0 24 24"
                         strokeWidth="2"
                         strokeLinecap="round"
@@ -164,14 +167,14 @@ export default function ContactPage() {
 
                     {/* YouTube */}
                     <a
-                      href="https://youtube.com"
+                      href="https://www.youtube.com/@OFFICIALPROFITPLUS"
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="YouTube"
                       className="w-7 h-7 flex items-center justify-center hover:text-[#084824] hover:scale-110 transition-transform"
                     >
                       <svg
-                        className="w-5 h-5 fill-current"
+                        className="w-6 h-6 fill-current"
                         viewBox="0 0 24 24"
                       >
                         <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
