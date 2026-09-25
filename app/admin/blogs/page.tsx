@@ -297,8 +297,11 @@ export default function BlogsListPage() {
                     </td>
 
                     {/* Slug */}
-                    <td className="py-4 px-4 font-mono text-xs text-zinc-600">
-                      <span className="px-2 py-0.5 rounded-md bg-zinc-100 border border-zinc-200">
+                    <td className="py-4 px-4 font-mono text-xs text-zinc-600 max-w-[200px] xl:max-w-[260px]">
+                      <span
+                        title={`/${blog.slug}`}
+                        className="inline-block max-w-full truncate px-2.5 py-1 rounded-md bg-zinc-100 border border-zinc-200 align-middle text-zinc-700"
+                      >
                         /{blog.slug}
                       </span>
                     </td>
@@ -396,7 +399,7 @@ export default function BlogsListPage() {
               {/* Card Body */}
               <div className="p-5 flex-1 flex flex-col justify-between">
                 <div>
-                  <span className="text-[11px] font-mono text-emerald-700 block mb-1 font-semibold">
+                  <span className="text-[11px] font-mono text-emerald-700 block mb-1 font-semibold truncate">
                     /{blog.slug}
                   </span>
                   <h3 className="font-['Outfit'] font-bold text-base text-zinc-900 group-hover:text-[#199250] transition-colors line-clamp-2">
