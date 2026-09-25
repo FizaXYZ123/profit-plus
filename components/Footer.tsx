@@ -157,19 +157,19 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/disclaimer"
+                  href="/us-government-disclaimer"
                   className="hover:text-[#199250] transition-colors"
                 >
                   U.S. Government Disclaimer
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="hover:text-[#199250] transition-colors">
+                <Link href="/terms-conditions" className="hover:text-[#199250] transition-colors">
                   Terms & Conditions
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-[#199250] transition-colors">
+                <Link href="/privacy-policy" className="hover:text-[#199250] transition-colors">
                   Privacy Policy
                 </Link>
               </li>
@@ -181,11 +181,6 @@ export default function Footer() {
               <li>
                 <Link href="/risk-disclaimer" className="hover:text-[#199250] transition-colors">
                   Risk Disclaimer
-                </Link>
-              </li>
-              <li>
-                <Link href="/live-class" className="hover:text-[#199250] transition-colors">
-                  Join Live Class
                 </Link>
               </li>
             </ul>

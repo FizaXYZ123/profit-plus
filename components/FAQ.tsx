@@ -1,14 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import Accordion, { AccordionItemData } from "./Accordion";
 
-interface FAQItem {
-  id: string;
-  question: string;
-  answer: string;
-}
-
-const FAQ_DATA: FAQItem[] = [
+const FAQ_DATA: AccordionItemData[] = [
   {
     id: "faq-1",
     question: "What is ProfitPlus?",
@@ -42,16 +37,10 @@ const FAQ_DATA: FAQItem[] = [
 ];
 
 export default function FAQ() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-  const toggleItem = (index: number) => {
-    setOpenIndex((prev) => (prev === index ? null : index));
-  };
-
   return (
     <section
       id="faq"
-      className="relative bg-white text-zinc-900 py-16 sm:py-12 px-4 sm:px-6 lg:px-8 overflow-hidden z-10"
+      className="relative bg-white text-zinc-900 py-16 sm:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden z-10"
     >
       <div className="max-w-4xl mx-auto">
         {/* Section Heading */}
@@ -59,49 +48,8 @@ export default function FAQ() {
           Frequently Asked Questions
         </h2>
 
-        {/* FAQ Accordion List matching user screenshot */}
-        <div className="space-y-3 sm:space-y-4">
-          {FAQ_DATA.map((item, index) => {
-            const isOpen = openIndex === index;
-
-            return (
-              <div
-                key={item.id}
-                className="rounded-[20px] sm:rounded-[24px] border border-zinc-300/80 bg-white transition-colors duration-200 overflow-hidden"
-              >
-                {/* Accordion Header */}
-                <button
-                  type="button"
-                  onClick={() => toggleItem(index)}
-                  className="w-full text-left px-6 sm:px-8 py-4 sm:py-5 flex items-center justify-between gap-4 cursor-pointer select-none focus:outline-none"
-                  aria-expanded={isOpen}
-                >
-                  <span className="font-['Outfit'] font-bold text-sm sm:text-base md:text-[16.5px] text-zinc-900 leading-snug">
-                    {item.question}
-                  </span>
-
-                  {/* Toggle Plus/Minus Icon */}
-                  <span
-                    className={`shrink-0 text-zinc-900 font-bold text-2xl leading-none transition-transform duration-300 ${
-                      isOpen ? "rotate-45" : "rotate-0"
-                    }`}
-                  >
-                    +
-                  </span>
-                </button>
-
-                {/* Accordion Content */}
-                {isOpen && (
-                  <div className="px-6 sm:px-8 pb-5 pt-1 text-left border-t border-zinc-100">
-                    <p className="font-['Manrope'] text-zinc-600 text-xs sm:text-sm md:text-[14.5px] leading-relaxed">
-                      {item.answer}
-                    </p>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+        {/* Reusable Accordion Component */}
+        <Accordion items={FAQ_DATA} />
       </div>
     </section>
   );

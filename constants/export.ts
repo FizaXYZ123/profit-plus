@@ -16,6 +16,7 @@ export const IMAGES = {
   kinetickLogo: "/kinetick-logo.webp",
   curvedMonitor: "/curved-monitor.webp",
   contactBgArches: "/contact-bg-arches.webp",
+  arrow: "/arrow.webp",
 } as const;
 
 export const COLORS = {
@@ -41,8 +42,9 @@ export const COLORS = {
 
 export const NAV_LINKS = [
   { label: "Home", href: "/" },
-  { label: "About Us", href: "/about" },
-  { label: "Portfolio", href: "/portfolio" },
+  { label: "About Software", href: "/about" },
+  { label: "About Company", href: "/about" },
+  { label: "Success Story", href: "/portfolio" },
   { label: "Contact Us", href: "/contact" },
 ] as const;
 
@@ -126,4 +128,56 @@ export const WHY_CHOOSE_US_CARDS = [
     iconType: "support",
   },
 ] as const;
+
+export const FAQ_PAGE_ITEMS = [
+  {
+    id: 1,
+    question: "1. How can I get started with the Profit Plus?",
+    answer:
+      "Getting started is simple. First, select the plan or automation package that fits your trading goals. Next, connect your preferred trading platform or broker account (such as NinjaTrader®) via our secure API. Once connected, configure your risk parameters, contract sizing, and trading preferences. Our onboarding team provides step-by-step guidance and dedicated setup assistance to ensure you are live and ready to trade with confidence.",
+  },
+  {
+    id: 2,
+    question: "2. Is the setup process difficult?",
+    answer:
+      "Not at all. Profit Plus is engineered for hassle-free installation and setup. We provide detailed video tutorials, comprehensive documentation, and direct 1-on-1 technical onboarding support. Most traders are fully configured and running in under 15 minutes, even with zero prior coding or bot experience.",
+  },
+  {
+    id: 3,
+    question: "3. Do I need to manually execute trades?",
+    answer:
+      "No. The Profit Plus automation bot automatically executes and copies trades in real time based on your defined rules and strategy criteria. You can let the software handle order entries, stop-losses, profit targets, and multi-account copying automatically, or switch to semi-automated mode whenever you wish to retain manual discretion.",
+  },
+  {
+    id: 4,
+    question: "4. Do I need extensive knowledge about trading?",
+    answer:
+      "No extensive trading experience is required. Profit Plus is designed for both novices and seasoned market veterans. Beginners benefit from pre-tested, automated strategies, automated risk controls, and practice simulation environments. Experienced traders can fine-tune indicators, customize trade sizing, and scale across multiple accounts.",
+  },
+  {
+    id: 5,
+    question: "5. Is it possible for people to lose money with the automation bot?",
+    answer:
+      "Yes, trading futures and financial markets always involves inherent market risk, and past performance is never a guarantee of future outcomes. While the Profit Plus bot enforces disciplined execution, automated stop-losses, and removes human emotional errors, losses can still occur during volatile market conditions. We always advise trading responsibly and utilizing strict risk management.",
+  },
+  {
+    id: 6,
+    question: "6. Am I able to withdraw my profits at any time?",
+    answer:
+      "Absolutely. Profit Plus is an automation software layer and does not hold custody of your capital. Your trading funds and profits remain directly in your own regulated brokerage account. You have 100% control over your funds and can deposit or withdraw your money at any time directly through your broker without any restrictions from us.",
+  },
+  {
+    id: 7,
+    question: "7. After purchasing the Automation Bot, what are the next steps?",
+    answer:
+      "Immediately upon completing your purchase, you will receive a welcome email containing your software access credentials, download links, and onboarding materials. You will also get a direct link to schedule your complimentary onboarding session with our technical team to assist with software installation, account connection, and walkthrough.",
+  },
+  {
+    id: 8,
+    question: "8. What is your policy regarding refunds?",
+    answer:
+      "We are committed to delivering the highest level of software quality and client satisfaction. We offer transparent licensing and provide dedicated technical support to help you get the system running successfully. Please review our full Terms of Service and Refund Policy on our website, or contact our support team at Sales@profitplus.us for specific details regarding your license.",
+  },
+];
+
 

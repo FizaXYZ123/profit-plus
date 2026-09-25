@@ -17,7 +17,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Profit Plus — Automate Your Stock Investment",
+  title: "Profit Plus | Automate Your Stock Investment",
   description:
     "Let AI handle your stock investments — automatically buy low and sell high with zero manual effort.",
   icons: {

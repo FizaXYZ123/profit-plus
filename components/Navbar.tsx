@@ -13,7 +13,7 @@ export default function Navbar() {
   return (
     <header className="fixed top-4 sm:top-6 left-0 right-0 z-50 px-3 sm:px-6">
       {/* Floating White Pill Container matching user's design */}
-      <nav className="max-w-6xl mx-auto bg-white/95 backdrop-blur-md text-zinc-900 rounded-full px-5 sm:px-8 py-2.5 sm:py-3 shadow-2xl border border-white/60 flex items-center justify-between transition-all duration-300 hover:shadow-emerald-950/20">
+      <nav className="max-w-7xl mx-auto bg-white/95 backdrop-blur-md text-zinc-900 rounded-full px-5 sm:px-8 py-2.5 sm:py-3 shadow-2xl border border-white/60 flex items-center justify-between transition-all duration-300 hover:shadow-emerald-950/20">
         {/* Brand Logo with exact exported asset */}
         <Link href="/" className="flex items-center gap-2 select-none group">
           <div className="relative h-9 sm:h-11 w-32 sm:w-40 flex items-center">
@@ -56,12 +56,12 @@ export default function Navbar() {
             })}
           </ul>
 
-          {/* Action CTA: 'Book Now' pill button in green #199250 */}
+          {/* Action CTA: 'Book a Demo' pill button in green #199250 */}
           <Link
             href="/contact"
             className="font-['Manrope'] font-bold text-xs sm:text-sm text-white px-6 sm:px-7 py-2.5 rounded-full bg-[#199250] hover:bg-[#055027] active:scale-95 transition-all duration-200 shadow-md shadow-[#199250]/30 hover:shadow-lg hover:shadow-[#055027]/40 flex items-center justify-center whitespace-nowrap"
           >
-            Book Now
+            Book a Demo
           </Link>
 
           {/* Mobile hamburger menu */}
