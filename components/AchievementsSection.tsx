@@ -67,6 +67,36 @@ const WHITE_CERTIFICATES: CertificateItem[] = [
     image: "/certificate_white/apex-trader-9-e1763961801142.webp",
     aspectClass: "aspect-[4/3]",
   },
+  {
+    id: "white-10",
+    title: "Profitrade Payout Certificate",
+    image: "/certificate_white/profitrade-1-e1763958930228.webp",
+    aspectClass: "aspect-[4/3]",
+  },
+  {
+    id: "white-11",
+    title: "Profitrade Payout Certificate",
+    image: "/certificate_white/profitrade-2-e1763958906662.webp",
+    aspectClass: "aspect-[4/3]",
+  },
+  {
+    id: "white-12",
+    title: "Profitrade Payout Certificate",
+    image: "/certificate_white/profitrade-3-e1763958880178.webp",
+    aspectClass: "aspect-[4/3]",
+  },
+  {
+    id: "white-13",
+    title: "Profitrade Payout Certificate",
+    image: "/certificate_white/profitrade-4-e1763958579669.webp",
+    aspectClass: "aspect-[4/3]",
+  },
+  {
+    id: "white-14",
+    title: "Profitrade Payout Certificate",
+    image: "/certificate_white/profitrade-5-e1763958840468.webp",
+    aspectClass: "aspect-[4/3]",
+  },
 ];
 
 // 2. Black Certificates (Tradeify, Funded Future, Fast Track, TakeProfit, TopOne)

@@ -6,10 +6,14 @@ import RecommendedPlatform from "@/components/RecommendedPlatform";
 import ClientReviews from "@/components/ClientReviews";
 import FAQ from "@/components/FAQ";
 import ContactUs from "@/components/ContactUs";
+import SuccessStoriesPopup from "@/components/SuccessStoriesPopup";
 
 export default function Home() {
   return (
     <>
+      {/* First-time visitor Success Stories Dialog Popup */}
+      <SuccessStoriesPopup />
+
       {/* Hero Section with webp grid and overlapping smaller tablet */}
       <Hero />
 

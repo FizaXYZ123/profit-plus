@@ -54,7 +54,7 @@ export default function SwiperSlider<T>({
   if (showNavigation) modules.push(Navigation);
 
   return (
-    <div className={`relative w-full group pb-4 ${className}`}>
+    <div className={`relative w-full group pb-8 ${className}`}>
       {/* Swiper Carousel Instance */}
       <Swiper
         onSwiper={(swiper) => {
@@ -94,7 +94,7 @@ export default function SwiperSlider<T>({
             1280: { slidesPerView: 4.5, spaceBetween: 24 },
           }
         }
-        className="w-full"
+        className="w-full pb-8! overflow-x-hidden!"
       >
         {items.map((item, index) => (
           <SwiperSlide key={index} className={`h-auto ${slideClassName}`}>
@@ -153,15 +153,15 @@ export default function SwiperSlider<T>({
       {/* Styled Swiper Pagination Dots */}
       <style jsx global>{`
         .swiper-pagination {
-          bottom: 3px !important;
+          bottom: 6px !important;
           display: flex !important;
           align-items: center !important;
           justify-content: center !important;
           gap: 6px !important;
         }
         .swiper-pagination-bullet {
-          width: 6px !important;
-          height: 6px !important;
+          width: 8px !important;
+          height: 8px !important;
           margin: 0 !important;
           border-radius: 9999px !important;
           background: #9ca3af !important;
