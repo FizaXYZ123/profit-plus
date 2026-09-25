@@ -3,20 +3,144 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { IMAGES } from "@/constants/export";
+import CountrySelector from "@/components/CountrySelector";
+import { getCountry } from "@/constants/countries";
 
 export default function ContactUs() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    countryCode: "+1",
+    countryIso: "US",
     phone: "",
     message: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Get active country rules (minLength, maxLength, format)
+  const currentCountry = getCountry(formData.countryIso);
+
+  // Handle phone change - only digits allowed, capped strictly at current country's max digits
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digitsOnly = e.target.value.replace(/\D/g, "");
+    if (digitsOnly.length <= currentCountry.maxLength) {
+      setFormData((prev) => ({ ...prev, phone: digitsOnly }));
+      if (error) setError(null);
+    }
+  };
+
+  const handlePhoneKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const allowedKeys = [
+      "Backspace",
+      "Delete",
+      "ArrowLeft",
+      "ArrowRight",
+      "Tab",
+      "Enter",
+      "Home",
+      "End",
+    ];
+    if (allowedKeys.includes(e.key) || e.ctrlKey || e.metaKey) return;
+    if (!/^[0-9]$/.test(e.key)) {
+      e.preventDefault();
+      return;
+    }
+
+    const target = e.target as HTMLInputElement;
+    const hasSelection =
+      target.selectionStart !== null &&
+      target.selectionEnd !== null &&
+      target.selectionEnd - target.selectionStart > 0;
+
+    if (formData.phone.length >= currentCountry.maxLength && !hasSelection) {
+      e.preventDefault();
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 4000);
+    setError(null);
+
+    const trimmedName = formData.name.trim();
+    const trimmedEmail = formData.email.trim();
+    const trimmedPhone = formData.phone.trim();
+    const trimmedMessage = formData.message.trim();
+
+    if (!trimmedName) {
+      setError("Please enter your name");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setError("Please provide a valid email address");
+      return;
+    }
+
+    if (!trimmedPhone) {
+      setError("Please enter your phone number");
+      return;
+    }
+
+    if (trimmedPhone.length < currentCountry.minLength) {
+      setError(
+        currentCountry.minLength === currentCountry.maxLength
+          ? `Please enter a valid ${currentCountry.maxLength}-digit phone number for ${currentCountry.name}`
+          : `Please enter a valid phone number (${currentCountry.minLength}-${currentCountry.maxLength} digits) for ${currentCountry.name}`
+      );
+      return;
+    }
+
+    if (!trimmedMessage) {
+      setError("Please enter a message");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/contact-us", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: trimmedName,
+          email: trimmedEmail,
+          countryCode: formData.countryCode,
+          phone: trimmedPhone,
+          message: trimmedMessage,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || "Failed to submit contact form");
+        setLoading(false);
+        return;
+      }
+
+      setSubmitted(true);
+      setLoading(false);
+      setTimeout(() => {
+        setSubmitted(false);
+        setFormData({
+          name: "",
+          email: "",
+          countryCode: "+1",
+          countryIso: "US",
+          phone: "",
+          message: "",
+        });
+      }, 4000);
+    } catch (err) {
+      console.error("Contact submission error:", err);
+      setError("Network error. Please try again later.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -96,6 +220,16 @@ export default function ContactUs() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col">
+              {/* Error Message */}
+              {error && (
+                <div className="mb-3 rounded-[12px] bg-red-50 border border-red-200 px-3.5 py-2 text-red-600 text-xs font-['Manrope'] flex items-center gap-2">
+                  <svg className="w-4 h-4 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>{error}</span>
+                </div>
+              )}
+
               {/* Name */}
               <div>
                 <label
@@ -138,7 +272,7 @@ export default function ContactUs() {
                 />
               </div>
 
-              {/* Phone Number */}
+              {/* Phone Number with Country Code */}
               <div className="mt-3 sm:mt-3.5">
                 <label
                   htmlFor="contact-phone"
@@ -146,16 +280,63 @@ export default function ContactUs() {
                 >
                   Phone Number
                 </label>
-                <input
-                  id="contact-phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phone: e.target.value })
-                  }
-                  className="w-full rounded-[12px] bg-[#f0f0f0] border-0 px-3.5 py-2 sm:py-2.5 text-zinc-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#055027]/40"
-                  placeholder=""
-                />
+                <div className="flex gap-2">
+                  {/* Custom Country Code Dropdown with Real Flags */}
+                  <CountrySelector
+                    value={formData.countryCode}
+                    selectedCode={formData.countryIso}
+                    onChange={(country) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        countryCode: country.dialCode,
+                        countryIso: country.code,
+                        phone: prev.phone.slice(0, country.maxLength),
+                      }));
+                      if (error) setError(null);
+                    }}
+                  />
+
+                  {/* Phone Input: Only allows numbers, capped strictly at country's exact max digits */}
+                  <div className="relative flex-1 min-w-0 flex items-center">
+                    <input
+                      id="contact-phone"
+                      type="tel"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={currentCountry.maxLength}
+                      required
+                      value={formData.phone}
+                      onChange={handlePhoneChange}
+                      onKeyDown={handlePhoneKeyDown}
+                      className="w-full rounded-[12px] bg-[#f0f0f0] border-0 pl-3.5 pr-11 py-2 sm:py-2.5 text-zinc-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#055027]/40"
+                      placeholder="Enter phone number"
+                    />
+                    {/* Digit Counter Badge or Green Success Tick */}
+                    <div className="absolute right-3 flex items-center pointer-events-none select-none">
+                      {formData.phone.length === currentCountry.maxLength ? (
+                        <div className="w-4.5 h-4.5 rounded-full bg-[#199250] text-white flex items-center justify-center shadow-xs animate-[fadeInScale_0.15s_ease-out]">
+                          <svg
+                            className="w-2.5 h-2.5"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        </div>
+                      ) : (
+                        <span className="text-[10px] sm:text-[11px] font-mono text-zinc-400">
+                          {formData.phone.length}/{currentCountry.maxLength}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Message */}
@@ -183,9 +364,16 @@ export default function ContactUs() {
               <div className="mt-5 sm:mt-6 flex justify-center">
                 <button
                   type="submit"
-                  className="rounded-full border border-[#055027] bg-white px-8 sm:px-10 py-1.5 sm:py-2 text-[#055027] font-['Outfit'] font-bold text-xs sm:text-sm hover:bg-[#055027] hover:text-white transition-all shadow-xs cursor-pointer active:scale-95"
+                  disabled={loading}
+                  className="rounded-full border border-[#055027] bg-[#055027] text-white px-8 sm:px-10 py-1.5 sm:py-2 font-['Outfit'] font-bold text-xs sm:text-sm hover:bg-[#043d1e] transition-all shadow-xs cursor-pointer active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
                 >
-                  Submit
+                  {loading && (
+                    <svg className="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                  )}
+                  <span>{loading ? "Submitting..." : "Submit"}</span>
                 </button>
               </div>
             </form>

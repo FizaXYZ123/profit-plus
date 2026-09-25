@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 export interface ReviewItem {
   id: string;
@@ -54,8 +54,69 @@ const REVIEWS: ReviewItem[] = [
 ];
 
 export default function ClientReviews() {
-  // Duplicate for seamless infinite marquee loop
-  const duplicatedReviews = [...REVIEWS, ...REVIEWS];
+  // Triple the reviews so user can scroll indefinitely in either direction
+  const duplicatedReviews = [...REVIEWS, ...REVIEWS, ...REVIEWS];
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeftPos, setScrollLeftPos] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Smooth continuous auto-scroll loop
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    let animId: number;
+    const speed = 0.75; // subtle smooth pixels per frame
+
+    const step = () => {
+      if (!isPaused && !isDragging && el) {
+        el.scrollLeft += speed;
+        // Infinite wrap check
+        const halfWidth = el.scrollWidth / 2;
+        if (el.scrollLeft >= halfWidth) {
+          el.scrollLeft -= halfWidth / 2;
+        }
+      }
+      animId = requestAnimationFrame(step);
+    };
+
+    animId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animId);
+  }, [isPaused, isDragging]);
+
+  // Mouse drag handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollRef.current) return;
+    setIsDragging(true);
+    setIsPaused(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeftPos(scrollRef.current.scrollLeft);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 1.4;
+    scrollRef.current.scrollLeft = scrollLeftPos - walk;
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    // Brief pause before resuming auto-scroll
+    setTimeout(() => setIsPaused(false), 800);
+  };
+
+  // Button arrow navigation
+  const scrollByAmount = (offset: number) => {
+    if (!scrollRef.current) return;
+    setIsPaused(true);
+    scrollRef.current.scrollBy({ left: offset, behavior: "smooth" });
+    setTimeout(() => setIsPaused(false), 2000);
+  };
 
   return (
     <section
@@ -69,30 +130,66 @@ export default function ClientReviews() {
     >
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Heading */}
-        <h2 className="font-['Outfit'] font-black text-2xl sm:text-3xl md:text-[38px] text-white tracking-tight text-center mb-8 sm:mb-12">
+        <h2 className="font-outfit font-black text-2xl sm:text-3xl md:text-[38px] text-white tracking-tight text-center mb-8 sm:mb-12">
           What Our Clients Say
         </h2>
 
         {/* Outer Rounded Container with border matching screenshot - clean without shadows */}
-        <div className="relative rounded-[28px] sm:rounded-[36px] bg-[#063f1f] border border-[#199250]/40 pt-7 pb-6 shadow-none backdrop-blur-sm overflow-hidden">
-          {/* Continuous Auto-Scrolling Marquee Row - Edge to edge */}
-          <div className="overflow-hidden w-full py-1">
-            <div className="animate-marquee flex items-stretch">
+        <div className="relative group rounded-[28px] sm:rounded-[36px] bg-[#063f1f] border border-[#199250]/40 pt-7 pb-6 shadow-none backdrop-blur-sm overflow-hidden">
+          {/* Left Arrow Button */}
+          <button
+            type="button"
+            onClick={() => scrollByAmount(-380)}
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer shadow-lg border border-white/10"
+            aria-label="Scroll reviews left"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          {/* Right Arrow Button */}
+          <button
+            type="button"
+            onClick={() => scrollByAmount(380)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer shadow-lg border border-white/10"
+            aria-label="Scroll reviews right"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          {/* User Scrollable & Auto-scrolling Row */}
+          <div
+            ref={scrollRef}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onMouseEnter={() => setIsPaused(true)}
+            onTouchStart={() => setIsPaused(true)}
+            onTouchEnd={() => setTimeout(() => setIsPaused(false), 1500)}
+            className={`w-full py-1 overflow-x-auto overflow-y-hidden [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none ${
+              isDragging ? "cursor-grabbing" : "cursor-grab"
+            }`}
+          >
+            <div className="flex items-stretch w-max">
               {duplicatedReviews.map((item, idx) => (
                 <div
                   key={`${item.id}-${idx}`}
-                  className="w-[290px] sm:w-[350px] md:w-[370px] bg-white text-zinc-900 rounded-[22px] sm:rounded-[26px] p-5 sm:p-7 shadow-none border-0 flex flex-col justify-between shrink-0 mx-2.5 sm:mx-3 transition-transform duration-200 hover:-translate-y-1 cursor-default select-none"
+                  className="w-[290px] sm:w-[350px] md:w-[370px] bg-white text-zinc-900 rounded-[22px] sm:rounded-[26px] p-5 sm:p-7 shadow-none border-0 flex flex-col justify-between shrink-0 mx-2.5 sm:mx-3 transition-transform duration-200 hover:-translate-y-1 cursor-grab active:cursor-grabbing select-none"
                 >
                   {/* Top user profile header */}
                   <div className="flex items-center gap-3">
                     {/* Dark Green Avatar */}
-                    <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#055027] text-white flex items-center justify-center font-['Outfit'] font-bold text-sm sm:text-base shrink-0">
+                    <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#055027] text-white flex items-center justify-center font-outfit font-bold text-sm sm:text-base shrink-0">
                       {item.avatarLetter}
                     </div>
 
                     {/* Name & Gold Rating Stars */}
                     <div>
-                      <h4 className="font-['Outfit'] font-bold text-zinc-900 text-sm sm:text-[15px] leading-tight">
+                      <h4 className="font-outfit font-bold text-zinc-900 text-sm sm:text-[15px] leading-tight">
                         {item.name}
                       </h4>
                       <div className="flex items-center gap-0.5 mt-1 text-[#f59e0b] text-xs sm:text-sm">
@@ -102,7 +199,7 @@ export default function ClientReviews() {
                   </div>
 
                   {/* Review Text Body */}
-                  <p className="font-['Manrope'] text-zinc-700 text-xs sm:text-[13px] leading-relaxed mt-4 font-normal">
+                  <p className="font-manrope text-zinc-700 text-xs sm:text-[13px] leading-relaxed mt-4 font-normal">
                     {item.review}
                   </p>
                 </div>
@@ -110,7 +207,7 @@ export default function ClientReviews() {
             </div>
           </div>
 
-          {/* Bottom Pagination Dots matching screenshot */}
+          {/* Bottom Pagination Dots */}
           <div className="flex items-center justify-center gap-2 mt-5 sm:mt-6">
             <span className="w-2 h-2 rounded-full bg-[#199250]" />
             <span className="w-1.5 h-1.5 rounded-full bg-white/30" />

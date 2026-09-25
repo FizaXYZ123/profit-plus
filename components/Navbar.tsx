@@ -5,10 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { IMAGES, NAV_LINKS, COLORS } from "@/constants/export";
+import BookDemoModal from "@/components/BookDemoModal";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [demoModalOpen, setDemoModalOpen] = useState(false);
 
   return (
     <header className="fixed top-4 sm:top-6 left-0 right-0 z-50 px-3 sm:px-6">
@@ -59,13 +61,13 @@ export default function Navbar() {
             })}
           </ul>
 
-          {/* Action CTA: 'Book a Demo' pill button in green #199250 */}
-          <Link
-            href="/contact"
-            className="font-['Manrope'] font-bold text-xs sm:text-sm text-white px-5 sm:px-7 py-2 sm:py-2.5 rounded-full bg-[#199250] hover:bg-[#055027] active:scale-95 transition-all duration-200 shadow-md shadow-[#199250]/30 hover:shadow-lg hover:shadow-[#055027]/40 flex items-center justify-center whitespace-nowrap"
+          {/* Action CTA: 'Book a Demo' pill button */}
+          <button
+            onClick={() => setDemoModalOpen(true)}
+            className="font-['Manrope'] font-bold text-xs sm:text-sm text-white px-5 sm:px-7 py-2 sm:py-2.5 rounded-full bg-[#199250] hover:bg-[#055027] active:scale-95 transition-all duration-200 shadow-md shadow-[#199250]/30 hover:shadow-lg hover:shadow-[#055027]/40 flex items-center justify-center whitespace-nowrap cursor-pointer"
           >
             Book a Demo
-          </Link>
+          </button>
 
           {/* Mobile & Tablet Hamburger Button (visible on screens < 1024px) */}
           <button
@@ -114,6 +116,12 @@ export default function Navbar() {
           ))}
         </div>
       )}
+
+      {/* Book a Demo Modal */}
+      <BookDemoModal
+        isOpen={demoModalOpen}
+        onClose={() => setDemoModalOpen(false)}
+      />
     </header>
   );
 }
