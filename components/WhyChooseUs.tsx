@@ -27,12 +27,12 @@ export default function WhyChooseUs() {
         </p>
 
         {/* 2x2 Responsive Card Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-12 sm:gap-y-14 gap-x-6 sm:gap-x-8 w-full mt-14 sm:mt-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-12 sm:gap-y-14 w-full mt-14 sm:mt-16 justify-items-center">
           {WHY_CHOOSE_US_CARDS.map((card) => {
             return (
               <div
                 key={card.id}
-                className="relative bg-[#055027] rounded-[26px] sm:rounded-[30px] pt-12 sm:pt-14 pb-8 sm:pb-9 px-6 sm:px-10 text-center flex flex-col items-center justify-start transition-transform duration-200 hover:-translate-y-1 shadow-sm"
+                className="md:max-w-[85%] relative bg-[#055027] rounded-[26px] sm:rounded-[30px] pt-12 sm:pt-14 pb-8 sm:pb-9 px-6 sm:px-10 text-center flex flex-col items-center justify-start transition-transform duration-200 hover:-translate-y-1 shadow-sm"
               >
                 {/* SVG Top Cutout Notch: Smooth concave cradle matching screenshot */}
                 <svg

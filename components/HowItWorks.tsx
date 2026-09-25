@@ -19,7 +19,7 @@ export default function HowItWorks() {
             return (
               <div
                 key={card.id}
-                className="relative rounded-[22px] min-h-[305px] flex flex-col justify-between p-6 pb-20 overflow-hidden border-0 border-white outline-none transition-transform duration-200 hover:-translate-y-1"
+                className="relative rounded-[22px] min-h-[200px] flex flex-col justify-between p-6 pb-20 overflow-hidden transition-transform duration-200 hover:-translate-y-1"
                 style={{ backgroundColor: card.bgColor }}
               >
                 {/* Text Content */}
@@ -181,17 +181,49 @@ export default function HowItWorks() {
           })}
         </div>
 
-        {/* Wide Plexus Network Banner with Floating Candlestick Chart (Exact user asset) */}
-        <div className="relative w-full max-w-6xl mx-auto mt-14 sm:mt-20">
-          <Image
-            src={IMAGES.howItWorksBanner}
-            alt="Profit Plus Trading Network Mesh"
-            width={1024}
-            height={167}
-            className="w-full h-auto object-contain block select-none rounded-[36px]"
-            priority
-            unoptimized
-          />
+        {/* SVG Definition for Responsive Notch Cutout ClipPath */}
+        <svg width="0" height="0" className="absolute pointer-events-none opacity-0" aria-hidden="true">
+          <defs>
+            <clipPath id="howItWorksBannerClip" clipPathUnits="objectBoundingBox">
+              <path d="M 0.0360 1.0 C 0.0160 1.0, 0 0.8621, 0 0.6897 C 0 0.5172, 0.0160 0.3793, 0.0360 0.3793 L 0.1602 0.3793 C 0.1772 0.3793, 0.1812 0, 0.2012 0 L 0.9419 0 C 0.9739 0, 1.0 0.2241, 1.0 0.5000 C 1.0 0.7759, 0.9739 1.0, 0.9419 1.0 Z" />
+            </clipPath>
+          </defs>
+        </svg>
+
+        {/* Video Banner with Notch Cutout and Floating Oval Frame Badge */}
+        <div className="relative w-full max-w-7xl mx-auto mt-14 sm:mt-20">
+          <div className="relative w-full aspect-[1000/116]">
+            {/* Clipped Video Container matching given banner shape */}
+            <div
+              className="w-full h-full overflow-hidden"
+              style={{
+                clipPath: "url(#howItWorksBannerClip)",
+                WebkitClipPath: "url(#howItWorksBannerClip)",
+              }}
+            >
+              <video
+                src="/video/home.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover block select-none"
+              />
+            </div>
+
+            {/* Top-Left Oval Frame with Candlestick Chart Badge */}
+            <div className="absolute -top-[1%] left-[0%] w-[16.8%] pointer-events-none z-20">
+              <Image
+                src="/oval-frame.svg"
+                alt="Candlestick Chart"
+                width={238}
+                height={52}
+                className="w-full h-auto block select-none"
+                priority
+                unoptimized
+              />
+            </div>
+          </div>
         </div>
       </div>
     </section>

@@ -36,20 +36,32 @@ const FAQ_DATA: AccordionItemData[] = [
   },
 ];
 
-export default function FAQ() {
+export type FAQItem = AccordionItemData;
+
+export interface FAQProps {
+  items?: FAQItem[];
+  className?: string;
+  title?: string;
+}
+
+export default function FAQ({
+  items = FAQ_DATA,
+  className = "",
+  title = "Frequently Asked Questions",
+}: FAQProps = {}) {
   return (
     <section
       id="faq"
-      className="relative bg-white text-zinc-900 py-16 sm:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden z-10"
+      className={`relative bg-white text-zinc-900 py-16 sm:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden z-10 ${className}`}
     >
       <div className="max-w-4xl mx-auto">
         {/* Section Heading */}
         <h2 className="font-['Outfit'] font-bold text-2xl sm:text-3xl md:text-[34px] text-[#111827] tracking-tight text-center mb-8 sm:mb-10">
-          Frequently Asked Questions
+          {title}
         </h2>
 
         {/* Reusable Accordion Component */}
-        <Accordion items={FAQ_DATA} />
+        <Accordion items={items} />
       </div>
     </section>
   );

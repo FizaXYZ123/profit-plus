@@ -1,5 +1,6 @@
 import React from "react";
 import SuccessStoryHero from "@/components/SuccessStoryHero";
+import AchievementsSection from "@/components/AchievementsSection";
 import SuccessStoryReviews from "@/components/SuccessStoryReviews";
 
 export const metadata = {
@@ -14,11 +15,11 @@ export default function SuccessStoryPage() {
       {/* 1. Hero Section: "Real Stories, Real Impact" with Arrow.png at bottom */}
       <SuccessStoryHero />
 
-      {/* 2. White Section: 2-Column Customer Testimonial Cards */}
+      {/* 2. Customer Reviews Section: 2-Column Testimonials */}
       <SuccessStoryReviews />
 
-      {/* Clean White Gap separating content from Footer */}
-      <div className="w-full bg-white h-12 sm:h-16 md:h-20" aria-hidden="true" />
+      {/* 3. Achievements Section: 3 Certificate Sliders (White, Black, Blue) */}
+      <AchievementsSection />
     </div>
   );
 }

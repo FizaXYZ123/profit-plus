@@ -70,7 +70,7 @@ const SUCCESS_REVIEWS: SuccessReview[] = [
 
 export default function SuccessStoryReviews() {
   return (
-    <section className="w-full bg-white text-zinc-900 py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8">
+    <section className="w-full bg-white text-zinc-900 pt-16 sm:pt-20 md:pt-24 pb-6 sm:pb-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
         {/* 2-Column Review Cards Grid matching user screenshots */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 lg:gap-x-16 gap-y-12 sm:gap-y-14">
