@@ -3,9 +3,15 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { IMAGES } from "@/constants/export";
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
   return (
     <div className="w-full bg-white">
       <footer className="relative bg-white text-zinc-900 rounded-t-[36px] sm:rounded-t-[48px] pt-14 sm:pt-18 pb-10 sm:pb-12 px-6 sm:px-10 lg:px-16 overflow-hidden z-20 border border-gray-200 shadow-[0_-12px_40px_rgba(0,0,0,0.04)]">
