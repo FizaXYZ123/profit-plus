@@ -4,44 +4,15 @@ import Image from "next/image";
 export default function AboutCompanyMission() {
   return (
     <section className="relative w-full bg-[#004e22] text-white py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      {/* 3D Perspective Glowing Green Grid Background */}
-      <div className="absolute inset-0 pointer-events-none select-none overflow-hidden opacity-30 sm:opacity-40">
-        <svg
-          className="w-full h-full object-cover"
-          viewBox="0 0 1200 600"
-          preserveAspectRatio="none"
-          fill="none"
-        >
-          <defs>
-            <linearGradient id="gridFade" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#4ade80" stopOpacity="0.8" />
-              <stop offset="50%" stopColor="#22c55e" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#15803d" stopOpacity="0.1" />
-            </linearGradient>
-          </defs>
-
-          {/* Perspective Horizon Rays */}
-          <line x1="600" y1="0" x2="-200" y2="600" stroke="#4ade80" strokeWidth="1" strokeOpacity="0.45" />
-          <line x1="600" y1="0" x2="0" y2="600" stroke="#4ade80" strokeWidth="1" strokeOpacity="0.45" />
-          <line x1="600" y1="0" x2="200" y2="600" stroke="#4ade80" strokeWidth="1" strokeOpacity="0.45" />
-          <line x1="600" y1="0" x2="400" y2="600" stroke="#4ade80" strokeWidth="1" strokeOpacity="0.45" />
-          <line x1="600" y1="0" x2="520" y2="600" stroke="#4ade80" strokeWidth="1" strokeOpacity="0.45" />
-          <line x1="600" y1="0" x2="600" y2="600" stroke="#4ade80" strokeWidth="1" strokeOpacity="0.45" />
-          <line x1="600" y1="0" x2="680" y2="600" stroke="#4ade80" strokeWidth="1" strokeOpacity="0.45" />
-          <line x1="600" y1="0" x2="800" y2="600" stroke="#4ade80" strokeWidth="1" strokeOpacity="0.45" />
-          <line x1="600" y1="0" x2="1000" y2="600" stroke="#4ade80" strokeWidth="1" strokeOpacity="0.45" />
-          <line x1="600" y1="0" x2="1200" y2="600" stroke="#4ade80" strokeWidth="1" strokeOpacity="0.45" />
-          <line x1="600" y1="0" x2="1400" y2="600" stroke="#4ade80" strokeWidth="1" strokeOpacity="0.45" />
-
-          {/* Horizontal lines with perspective exponential spacing */}
-          <line x1="0" y1="40" x2="1200" y2="40" stroke="#4ade80" strokeWidth="1" strokeOpacity="0.25" />
-          <line x1="0" y1="90" x2="1200" y2="90" stroke="#4ade80" strokeWidth="1" strokeOpacity="0.3" />
-          <line x1="0" y1="150" x2="1200" y2="150" stroke="#4ade80" strokeWidth="1" strokeOpacity="0.35" />
-          <line x1="0" y1="230" x2="1200" y2="230" stroke="#4ade80" strokeWidth="1.2" strokeOpacity="0.4" />
-          <line x1="0" y1="330" x2="1200" y2="330" stroke="#4ade80" strokeWidth="1.3" strokeOpacity="0.45" />
-          <line x1="0" y1="450" x2="1200" y2="450" stroke="#4ade80" strokeWidth="1.5" strokeOpacity="0.5" />
-          <line x1="0" y1="590" x2="1200" y2="590" stroke="#4ade80" strokeWidth="1.5" strokeOpacity="0.55" />
-        </svg>
+      {/* Perspective Grid Background */}
+      <div className="absolute inset-0 pointer-events-none select-none z-0">
+        <Image
+          src="/perspective-grid.webp"
+          alt=""
+          fill
+          className="object-cover object-bottom opacity-50"
+          priority
+        />
       </div>
 
       <div className="max-w-6xl mx-auto relative z-10 flex flex-col items-center">

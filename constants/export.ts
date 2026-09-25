@@ -184,4 +184,6 @@ export const FAQ_PAGE_ITEMS = [
   },
 ];
 
+export { API_ENDPOINTS } from "./endpoints";
+
 
