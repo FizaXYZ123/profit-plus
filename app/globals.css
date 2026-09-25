@@ -66,3 +66,12 @@ html, body {
   overflow-x: hidden;
   max-width: 100vw;
 }
+
+/* Modal Open state to strictly lock background scrolling */
+html.modal-open,
+body.modal-open {
+  overflow: hidden !important;
+  height: 100% !important;
+  overscroll-behavior: contain !important;
+}
+

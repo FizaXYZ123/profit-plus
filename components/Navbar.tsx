@@ -10,6 +10,10 @@ export default function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
+
   return (
     <header className="fixed top-4 sm:top-6 left-0 right-0 z-50 px-3 sm:px-6">
       {/* Floating White Pill Container matching user's design */}

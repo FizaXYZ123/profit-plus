@@ -52,6 +52,8 @@ export async function GET(request:NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+
+    await requireAdmin(request);
     const body = await request.json();
 
     const { name, email, password, role } = body;
@@ -134,6 +136,14 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json(
+        {
+          message: error.message,
+        },
+        { status: error.status }
+      );
+    }
     console.error("Create user error:", error);
 
     return NextResponse.json(
