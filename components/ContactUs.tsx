@@ -22,15 +22,11 @@ export default function ContactUs() {
   return (
     <section
       id="contact"
-      className="relative text-white pt-10 sm:pt-14 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden z-10"
-      style={{
-        backgroundColor: "#054522",
-        // @ts-expect-error CSS display-p3 color definition
-        backgroundColor: "color(display-p3 0.0196 0.2706 0.1333)",
-      }}
+      className="relative text-white pt-10 sm:pt-14 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden z-10 bg-[#054522]"
+      style={{ backgroundColor: "#054522" }}
     >
       {/* 1. Concentric Green Arches at the Bottom Center */}
-      <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 w-[600px] sm:w-[800px] h-[280px] sm:h-[360px] pointer-events-none select-none z-0 opacity-75">
+      <div className="absolute -bottom-8 sm:-bottom-12 left-1/2 -translate-x-1/2 w-[600px] sm:w-[800px] h-[280px] sm:h-[360px] pointer-events-none select-none z-0 opacity-75">
         <Image
           src={IMAGES.contactBgArches}
           alt=""
@@ -41,7 +37,7 @@ export default function ContactUs() {
       </div>
 
       {/* 2. Curved PC Monitor at Bottom Left (Behind Candlesticks - z-5) */}
-      <div className="absolute bottom-3 sm:bottom-5 left-0 sm:left-2 w-40 sm:w-56 md:w-68 h-auto pointer-events-none select-none z-5">
+      <div className="absolute bottom-2 sm:bottom-3 left-0 sm:left-2 w-44 sm:w-56 md:w-72 h-auto pointer-events-none select-none z-5">
         <Image
           src={IMAGES.curvedMonitor}
           alt="Trading Monitor Display"
@@ -56,7 +52,7 @@ export default function ContactUs() {
       {/* 3. Candlestick Chart Trend Line (IN FRONT OF PC Monitor - z-15) */}
       <div className="absolute inset-0 pointer-events-none select-none z-15 overflow-hidden">
         {/* Candlesticks starting on top of/in front of the PC monitor screen */}
-        <div className="absolute bottom-2 sm:bottom-3 left-0 w-[420px] sm:w-[580px] md:w-[680px] h-[360px] sm:h-[460px] md:h-[520px] opacity-95">
+        <div className="absolute bottom-1 sm:bottom-2 left-0 w-[420px] sm:w-[580px] md:w-[680px] h-[360px] sm:h-[460px] md:h-[520px] opacity-95">
           <Image
             src={IMAGES.candlestickChart}
             alt=""

@@ -16,6 +16,10 @@ export const IMAGES = {
   kinetickLogo: "/kinetick-logo.webp",
   curvedMonitor: "/curved-monitor.webp",
   contactBgArches: "/contact-bg-arches.webp",
+  laptop: "/laptop.png",
+  candleSoftware: "/candle-softwear.png",
+  candleSoftware2: "/candle-softwear2.png",
+  aiBot: "/Ai.png",
 } as const;
 
 export const COLORS = {
@@ -41,8 +45,9 @@ export const COLORS = {
 
 export const NAV_LINKS = [
   { label: "Home", href: "/" },
-  { label: "About Us", href: "/about" },
-  { label: "Portfolio", href: "/portfolio" },
+  { label: "About Software", href: "/about-software" },
+  { label: "About Company", href: "/about" },
+  { label: "Success Story", href: "/success-story" },
   { label: "Contact Us", href: "/contact" },
 ] as const;
 

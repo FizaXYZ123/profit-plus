@@ -30,19 +30,22 @@ export default function Navbar() {
         </Link>
 
         {/* Center/Right Nav Links with Proper Routing */}
-        <div className="flex items-center gap-6 sm:gap-10">
-          <ul className="hidden md:flex items-center gap-7 lg:gap-9 font-['Manrope'] font-medium text-sm text-zinc-700">
+        <div className="flex items-center gap-4 sm:gap-6 lg:gap-8">
+          <ul className="hidden lg:flex items-center gap-6 xl:gap-8 font-['Manrope'] font-medium text-sm text-zinc-700">
             {NAV_LINKS.map((item) => {
               const isActive =
                 item.href === "/"
                   ? pathname === "/"
-                  : pathname.startsWith(item.href);
+                  : pathname === item.href ||
+                    pathname.startsWith(`${item.href}/`) ||
+                    (item.label === "Success Story" &&
+                      (pathname === "/success-story" || pathname === "/portfolio"));
 
               return (
                 <li key={item.label}>
                   <Link
                     href={item.href}
-                    className={`relative py-1 transition-colors duration-200 hover:text-[#199250] ${
+                    className={`relative py-1 whitespace-nowrap transition-colors duration-200 hover:text-[#199250] ${
                       isActive ? "text-[#199250] font-semibold" : "text-zinc-600"
                     }`}
                   >
@@ -56,18 +59,18 @@ export default function Navbar() {
             })}
           </ul>
 
-          {/* Action CTA: 'Book Now' pill button in green #199250 */}
+          {/* Action CTA: 'Book a Demo' pill button in green #199250 */}
           <Link
             href="/contact"
-            className="font-['Manrope'] font-bold text-xs sm:text-sm text-white px-6 sm:px-7 py-2.5 rounded-full bg-[#199250] hover:bg-[#055027] active:scale-95 transition-all duration-200 shadow-md shadow-[#199250]/30 hover:shadow-lg hover:shadow-[#055027]/40 flex items-center justify-center whitespace-nowrap"
+            className="font-['Manrope'] font-bold text-xs sm:text-sm text-white px-5 sm:px-7 py-2 sm:py-2.5 rounded-full bg-[#199250] hover:bg-[#055027] active:scale-95 transition-all duration-200 shadow-md shadow-[#199250]/30 hover:shadow-lg hover:shadow-[#055027]/40 flex items-center justify-center whitespace-nowrap"
           >
-            Book Now
+            Book a Demo
           </Link>
 
-          {/* Mobile hamburger menu */}
+          {/* Mobile & Tablet Hamburger Button (visible on screens < 1024px) */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-1.5 rounded-full text-zinc-700 hover:bg-zinc-100 transition-colors"
+            className="lg:hidden p-1.5 rounded-full text-zinc-700 hover:bg-zinc-100 transition-colors cursor-pointer"
             aria-label="Toggle Navigation"
           >
             <svg
@@ -96,9 +99,9 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile & Tablet Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden max-w-sm mx-auto mt-2 bg-white/95 backdrop-blur-lg rounded-3xl p-4 shadow-2xl border border-zinc-200/50 flex flex-col gap-2 font-['Manrope']">
+        <div className="lg:hidden max-w-sm mx-auto mt-2 bg-white/95 backdrop-blur-lg rounded-3xl p-4 shadow-2xl border border-zinc-200/50 flex flex-col gap-2 font-['Manrope']">
           {NAV_LINKS.map((item) => (
             <Link
               key={item.label}
