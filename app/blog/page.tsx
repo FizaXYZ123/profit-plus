@@ -6,6 +6,8 @@ import { headers } from "next/headers";
 import { BlogPost } from "@/constants/blogs";
 import { API_ENDPOINTS } from "@/constants/endpoints";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Blogs | Profit Plus",
   description:
@@ -33,7 +35,6 @@ async function getBlogs(): Promise<{ featured: BlogPost | null; list: BlogPost[]
   try {
     const baseUrl = await getBaseUrl();
     const apiUrl = `${baseUrl}${API_ENDPOINTS.BLOG}`;
-    console.log(`[BlogPage] Fetching blogs from: ${apiUrl}`);
     const res = await fetch(apiUrl, {
       cache: "no-store",
     });
@@ -41,8 +42,7 @@ async function getBlogs(): Promise<{ featured: BlogPost | null; list: BlogPost[]
     if (res.ok) {
       const json = await res.json();
       const dbBlogs = json?.data;
-      console.log(`[BlogPage] API Response received (${dbBlogs?.length ?? 0} blogs):`, dbBlogs);
-
+      
       if (dbBlogs && Array.isArray(dbBlogs) && dbBlogs.length > 0) {
         const formatted: BlogPost[] = dbBlogs.map((b: any) => ({
           id: b.id,

@@ -146,7 +146,7 @@ export default function ContactPage() {
   return (
     <div className="w-full flex-1 flex flex-col bg-white selection:text-white overflow-x-hidden items-center">
       {/* Main Hero & Card Section */}
-      <section className="relative pt-32 sm:pt-36 lg:pt-40 px-4 sm:px-6 lg:px-8 flex-1 w-full flex flex-col items-center bg-[#032010]">
+      <section className="relative pt-32 sm:pt-36 lg:pt-40 px-4 sm:px-6 lg:px-8 flex-1 w-full flex flex-col items-center bg-[#032010] max-h-[700px]">
         {/* Section Heading & Subtitle */}
         <div className="relative z-10 text-center max-w-4xl mx-auto mb-8 sm:mb-12">
           <h1 className="font-['Outfit'] font-black text-3xl sm:text-5xl md:text-[54px] lg:text-[65px] text-white tracking-tight">
