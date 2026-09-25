@@ -237,7 +237,7 @@ export default function BlogsListPage() {
           <p className="font-['Manrope'] text-xs sm:text-sm text-zinc-500 mt-1 max-w-sm mx-auto">
             {searchQuery
               ? "Try adjusting your search query or clear the filter."
-              : "Start by creating your first article to share market updates and trading insights."}
+              : "Start by creating your first blog to share market updates and trading insights."}
           </p>
           {!searchQuery && (
             <Link

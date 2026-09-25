@@ -1,302 +1,464 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import {
+  Bold,
+  Italic,
+  Underline,
+  Strikethrough,
+  List,
+  ListOrdered,
+  Quote,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Link as LinkIcon,
+  Image as ImageIcon,
+  Minus,
+  RotateCcw,
+  RotateCw,
+  Code,
+  Eye,
+  RemoveFormatting,
+  ChevronDown,
+  Check,
+} from "lucide-react";
 
 interface RichTextEditorProps {
   value: string;
-  onChange: (value: string) => void;
+  onChange: (content: string) => void;
   placeholder?: string;
   minHeight?: string;
 }
 
+const FORMAT_OPTIONS = [
+  { value: "p", label: "Paragraph", desc: "Normal text" },
+  { value: "h2", label: "Heading 2 (H2)", desc: "Main section" },
+  { value: "h3", label: "Heading 3 (H3)", desc: "Subsection" },
+  { value: "h4", label: "Heading 4 (H4)", desc: "Minor header" },
+  { value: "blockquote", label: "Quote", desc: "Blockquote callout" },
+  { value: "pre", label: "Code Block", desc: "Monospaced code" },
+];
+
 export default function RichTextEditor({
   value,
   onChange,
-  placeholder = "Write your blog content here... (Markdown & HTML supported)",
-  minHeight = "420px",
+  placeholder = "Write your blog content here...",
+  minHeight = "280px",
 }: RichTextEditorProps) {
-  const [activeTab, setActiveTab] = useState<"write" | "preview" | "split">("write");
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isSourceMode, setIsSourceMode] = useState(false);
+  const [htmlSource, setHtmlSource] = useState(value || "");
+  const [wordCount, setWordCount] = useState(0);
+  const [charCount, setCharCount] = useState(0);
+  const [currentFormat, setCurrentFormat] = useState("p");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const insertFormatting = (prefix: string, suffix: string = "", defaultText: string = "") => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
+  // Initialize and sync content with external value
+  useEffect(() => {
+    if (editorRef.current && !isSourceMode) {
+      if (editorRef.current.innerHTML !== value) {
+        editorRef.current.innerHTML = value || "";
+      }
+    }
+    setHtmlSource(value || "");
+    updateCounts(value || "");
+  }, [value, isSourceMode]);
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = value.substring(start, end) || defaultText;
-    const before = value.substring(0, start);
-    const after = value.substring(end);
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
-    const newText = `${before}${prefix}${selectedText}${suffix}${after}`;
-    onChange(newText);
-
-    setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(
-        start + prefix.length,
-        start + prefix.length + selectedText.length
-      );
-    }, 0);
+  const updateCounts = (textOrHtml: string) => {
+    // Strip tags to count real text
+    const text = textOrHtml.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+    setCharCount(text.length);
+    setWordCount(text ? text.split(/\s+/).length : 0);
   };
 
-  const insertAtLineStart = (prefix: string) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
+  const handleInput = useCallback(() => {
+    if (editorRef.current) {
+      const html = editorRef.current.innerHTML;
+      onChange(html);
+      setHtmlSource(html);
+      updateCounts(html);
+    }
+  }, [onChange]);
 
-    const start = textarea.selectionStart;
-    const before = value.substring(0, start);
-    const lastNewline = before.lastIndexOf("\n");
-    const lineStart = lastNewline === -1 ? 0 : lastNewline + 1;
-
-    const beforeLine = value.substring(0, lineStart);
-    const afterLine = value.substring(lineStart);
-
-    const newText = `${beforeLine}${prefix}${afterLine}`;
-    onChange(newText);
-
-    setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + prefix.length, start + prefix.length);
-    }, 0);
+  const exec = (command: string, val: string | undefined = undefined) => {
+    if (isSourceMode) return;
+    document.execCommand(command, false, val);
+    if (editorRef.current) {
+      editorRef.current.focus();
+      handleInput();
+    }
   };
 
-  const wordCount = value.trim() ? value.trim().split(/\s+/).length : 0;
-  const charCount = value.length;
-  const readTime = Math.max(1, Math.ceil(wordCount / 200));
-
-  const parseMarkdownToHtml = (markdown: string) => {
-    if (!markdown) return "<p class='text-zinc-400 italic'>No content to preview yet.</p>";
-
-    let html = markdown
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
-
-    html = html.replace(/```([\s\S]*?)```/g, (_match, code) => {
-      return `<pre class="bg-zinc-900 text-emerald-300 p-4 rounded-xl border border-zinc-800 overflow-x-auto font-mono text-xs sm:text-sm my-4"><code>${code.trim()}</code></pre>`;
-    });
-
-    html = html.replace(/`([^`]+)`/g, "<code class='bg-emerald-50 text-emerald-800 px-1.5 py-0.5 rounded font-mono text-xs sm:text-sm border border-emerald-100'>$1</code>");
-
-    html = html.replace(/^### (.*$)/gim, "<h3 class='text-lg sm:text-xl font-bold font-[\"Outfit\"] text-zinc-900 mt-6 mb-2'>$1</h3>");
-    html = html.replace(/^## (.*$)/gim, "<h2 class='text-xl sm:text-2xl font-bold font-[\"Outfit\"] text-zinc-900 mt-8 mb-3 pb-1 border-b border-zinc-200'>$1</h2>");
-    html = html.replace(/^# (.*$)/gim, "<h1 class='text-2xl sm:text-3xl font-black font-[\"Outfit\"] text-zinc-900 mt-8 mb-4'>$1</h1>");
-
-    html = html.replace(/^\> (.*$)/gim, "<blockquote class='border-l-4 border-emerald-500 pl-4 py-1 italic text-zinc-700 my-4 bg-emerald-50/50 rounded-r-lg'>$1</blockquote>");
-
-    html = html.replace(/\*\*\*(.*?)\*\*\*/gim, "<strong><em>$1</em></strong>");
-    html = html.replace(/\*\*(.*?)\*\*/gim, "<strong class='font-bold text-zinc-900'>$1</strong>");
-    html = html.replace(/\*(.*?)\*/gim, "<em class='italic text-zinc-800'>$1</em>");
-
-    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/gim, "<a href='$2' target='_blank' rel='noopener noreferrer' class='text-[#199250] hover:text-[#055027] underline font-semibold'>$1</a>");
-
-    html = html.replace(/^\s*[\-\*]\s+(.*)$/gim, "<li class='ml-6 list-disc text-zinc-700'>$1</li>");
-    html = html.replace(/^\s*\d+\.\s+(.*)$/gim, "<li class='ml-6 list-decimal text-zinc-700'>$1</li>");
-    html = html.replace(/^(?:---|\*\*\*|___)$/gim, "<hr class='my-6 border-zinc-200' />");
-
-    const paragraphs = html.split(/\n\s*\n/);
-    return paragraphs
-      .map((p) => {
-        const trimmed = p.trim();
-        if (
-          trimmed.startsWith("<h1") ||
-          trimmed.startsWith("<h2") ||
-          trimmed.startsWith("<h3") ||
-          trimmed.startsWith("<pre") ||
-          trimmed.startsWith("<blockquote") ||
-          trimmed.startsWith("<li") ||
-          trimmed.startsWith("<hr")
-        ) {
-          return trimmed;
-        }
-        return `<p class='mb-4 text-zinc-800 text-sm sm:text-base leading-relaxed'>${trimmed.replace(/\n/g, "<br />")}</p>`;
-      })
-      .join("");
+  const handleSelectFormat = (tag: string) => {
+    if (isSourceMode) return;
+    if (tag === "p") {
+      exec("formatBlock", "<p>");
+    } else {
+      exec("formatBlock", `<${tag}>`);
+    }
+    setCurrentFormat(tag);
+    setIsDropdownOpen(false);
   };
+
+  const handleAddLink = () => {
+    if (isSourceMode) return;
+    const url = prompt("Enter the link URL (https://...):");
+    if (url) {
+      exec("createLink", url);
+    }
+  };
+
+  const handleAddImage = () => {
+    if (isSourceMode) return;
+    const url = prompt("Enter Image URL (https://...):");
+    if (url) {
+      exec("insertImage", url);
+    }
+  };
+
+  const handleToggleSource = () => {
+    if (isSourceMode) {
+      // Switching from Code to Visual
+      if (editorRef.current) {
+        editorRef.current.innerHTML = htmlSource;
+      }
+      onChange(htmlSource);
+      setIsSourceMode(false);
+    } else {
+      // Switching from Visual to Code
+      if (editorRef.current) {
+        setHtmlSource(editorRef.current.innerHTML);
+      }
+      setIsSourceMode(true);
+    }
+  };
+
+  const handleSourceChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value;
+    setHtmlSource(val);
+    onChange(val);
+    updateCounts(val);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      exec("insertHTML", "&nbsp;&nbsp;&nbsp;&nbsp;");
+    }
+  };
+
+  const activeOption = FORMAT_OPTIONS.find((o) => o.value === currentFormat) || FORMAT_OPTIONS[0];
 
   return (
-    <div className="w-full rounded-2xl border border-zinc-300 bg-white overflow-hidden flex flex-col shadow-xs">
-      {/* Top Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 sm:p-3 bg-zinc-50 border-b border-zinc-200 select-none">
-        {/* Formatting Buttons */}
+    <div className="w-full rounded-2xl bg-white border border-zinc-200/90 overflow-hidden shadow-xs focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all">
+      {/* Editor Toolbar */}
+      <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-zinc-50/90 border-b border-zinc-200/80 text-zinc-600 select-none">
+        {/* Left Toolbar Actions */}
         <div className="flex flex-wrap items-center gap-1">
+          {/* Custom Styled Block Format Dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              disabled={isSourceMode}
+              className={`px-3 py-1.5 rounded-xl bg-white hover:bg-zinc-100/80 border ${
+                isDropdownOpen
+                  ? "border-emerald-600 ring-2 ring-emerald-500/20 text-emerald-700 font-bold"
+                  : "border-zinc-200/90 text-zinc-800 font-semibold shadow-2xs"
+              } text-xs flex items-center gap-2 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed`}
+            >
+              <span>{activeOption.label}</span>
+              <ChevronDown
+                className={`h-3.5 w-3.5 text-zinc-400 transition-transform duration-200 ${
+                  isDropdownOpen ? "rotate-180 text-emerald-600" : ""
+                }`}
+              />
+            </button>
+
+            {/* Custom Green/White Dropdown Popover */}
+            {isDropdownOpen && (
+              <div className="absolute top-full left-0 mt-1.5 z-50 w-56 rounded-2xl bg-white border border-zinc-200 p-1.5 shadow-xl shadow-zinc-900/10 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
+                {FORMAT_OPTIONS.map((opt) => {
+                  const isSelected = opt.value === currentFormat;
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => handleSelectFormat(opt.value)}
+                      className={`w-full px-3 py-2 rounded-xl text-left text-xs transition-all flex items-center justify-between cursor-pointer ${
+                        isSelected
+                          ? "bg-[#199250] text-white font-bold shadow-xs"
+                          : "text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900"
+                      }`}
+                    >
+                      <div>
+                        <div className="font-semibold">{opt.label}</div>
+                        <div className={`text-[10px] ${isSelected ? "text-emerald-100" : "text-zinc-400"}`}>
+                          {opt.desc}
+                        </div>
+                      </div>
+                      {isSelected && <Check className="h-4 w-4 shrink-0 text-white" />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <div className="h-4 w-[1px] bg-zinc-200 mx-1" />
+
+          {/* Inline Styles */}
           <button
             type="button"
-            onClick={() => insertFormatting("**", "**", "bold text")}
-            title="Bold"
-            className="p-1.5 sm:px-2.5 sm:py-1 rounded-lg hover:bg-zinc-200/70 text-zinc-700 hover:text-zinc-900 transition-colors text-xs font-bold font-mono"
+            onClick={() => exec("bold")}
+            disabled={isSourceMode}
+            className="p-1.5 rounded-lg text-zinc-600 hover:bg-zinc-200/70 hover:text-zinc-900 active:scale-95 transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+            title="Bold (Ctrl+B)"
           >
-            B
+            <Bold className="h-4 w-4" />
           </button>
           <button
             type="button"
-            onClick={() => insertFormatting("*", "*", "italic text")}
-            title="Italic"
-            className="p-1.5 sm:px-2.5 sm:py-1 rounded-lg hover:bg-zinc-200/70 text-zinc-700 hover:text-zinc-900 transition-colors text-xs italic font-mono"
+            onClick={() => exec("italic")}
+            disabled={isSourceMode}
+            className="p-1.5 rounded-lg text-zinc-600 hover:bg-zinc-200/70 hover:text-zinc-900 active:scale-95 transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+            title="Italic (Ctrl+I)"
           >
-            I
+            <Italic className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => exec("underline")}
+            disabled={isSourceMode}
+            className="p-1.5 rounded-lg text-zinc-600 hover:bg-zinc-200/70 hover:text-zinc-900 active:scale-95 transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+            title="Underline (Ctrl+U)"
+          >
+            <Underline className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => exec("strikeThrough")}
+            disabled={isSourceMode}
+            className="p-1.5 rounded-lg text-zinc-600 hover:bg-zinc-200/70 hover:text-zinc-900 active:scale-95 transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+            title="Strikethrough"
+          >
+            <Strikethrough className="h-4 w-4" />
           </button>
 
-          <span className="h-4 w-[1px] bg-zinc-300 mx-1" />
+          <div className="h-4 w-[1px] bg-zinc-200 mx-1" />
 
+          {/* Lists */}
           <button
             type="button"
-            onClick={() => insertAtLineStart("# ")}
-            title="Heading 1"
-            className="p-1.5 sm:px-2 sm:py-1 rounded-lg hover:bg-zinc-200/70 text-zinc-700 hover:text-zinc-900 transition-colors text-xs font-bold"
-          >
-            H1
-          </button>
-          <button
-            type="button"
-            onClick={() => insertAtLineStart("## ")}
-            title="Heading 2"
-            className="p-1.5 sm:px-2 sm:py-1 rounded-lg hover:bg-zinc-200/70 text-zinc-700 hover:text-zinc-900 transition-colors text-xs font-bold"
-          >
-            H2
-          </button>
-          <button
-            type="button"
-            onClick={() => insertAtLineStart("### ")}
-            title="Heading 3"
-            className="p-1.5 sm:px-2 sm:py-1 rounded-lg hover:bg-zinc-200/70 text-zinc-700 hover:text-zinc-900 transition-colors text-xs font-bold"
-          >
-            H3
-          </button>
-
-          <span className="h-4 w-[1px] bg-zinc-300 mx-1" />
-
-          <button
-            type="button"
-            onClick={() => insertAtLineStart("- ")}
+            onClick={() => exec("insertUnorderedList")}
+            disabled={isSourceMode}
+            className="p-1.5 rounded-lg text-zinc-600 hover:bg-zinc-200/70 hover:text-zinc-900 active:scale-95 transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
             title="Bullet List"
-            className="p-1.5 sm:px-2 sm:py-1 rounded-lg hover:bg-zinc-200/70 text-zinc-700 hover:text-zinc-900 transition-colors text-xs"
           >
-            • List
+            <List className="h-4 w-4" />
           </button>
           <button
             type="button"
-            onClick={() => insertAtLineStart("1. ")}
+            onClick={() => exec("insertOrderedList")}
+            disabled={isSourceMode}
+            className="p-1.5 rounded-lg text-zinc-600 hover:bg-zinc-200/70 hover:text-zinc-900 active:scale-95 transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
             title="Numbered List"
-            className="p-1.5 sm:px-2 sm:py-1 rounded-lg hover:bg-zinc-200/70 text-zinc-700 hover:text-zinc-900 transition-colors text-xs"
           >
-            1. List
+            <ListOrdered className="h-4 w-4" />
           </button>
           <button
             type="button"
-            onClick={() => insertAtLineStart("> ")}
-            title="Quote"
-            className="p-1.5 sm:px-2 sm:py-1 rounded-lg hover:bg-zinc-200/70 text-zinc-700 hover:text-zinc-900 transition-colors text-xs"
+            onClick={() => exec("formatBlock", "<blockquote>")}
+            disabled={isSourceMode}
+            className="p-1.5 rounded-lg text-zinc-600 hover:bg-zinc-200/70 hover:text-zinc-900 active:scale-95 transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+            title="Quote Block"
           >
-            &ldquo; Quote
+            <Quote className="h-4 w-4" />
+          </button>
+
+          <div className="h-4 w-[1px] bg-zinc-200 mx-1" />
+
+          {/* Alignment */}
+          <button
+            type="button"
+            onClick={() => exec("justifyLeft")}
+            disabled={isSourceMode}
+            className="p-1.5 rounded-lg text-zinc-600 hover:bg-zinc-200/70 hover:text-zinc-900 active:scale-95 transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+            title="Align Left"
+          >
+            <AlignLeft className="h-4 w-4" />
           </button>
           <button
             type="button"
-            onClick={() => insertFormatting("```\n", "\n```", "code here")}
-            title="Code Block"
-            className="p-1.5 sm:px-2 sm:py-1 rounded-lg hover:bg-zinc-200/70 text-zinc-700 hover:text-zinc-900 transition-colors text-xs font-mono"
+            onClick={() => exec("justifyCenter")}
+            disabled={isSourceMode}
+            className="p-1.5 rounded-lg text-zinc-600 hover:bg-zinc-200/70 hover:text-zinc-900 active:scale-95 transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+            title="Align Center"
           >
-            &lt;/&gt;
+            <AlignCenter className="h-4 w-4" />
           </button>
           <button
             type="button"
-            onClick={() => insertFormatting("[", "](https://example.com)", "Link text")}
+            onClick={() => exec("justifyRight")}
+            disabled={isSourceMode}
+            className="p-1.5 rounded-lg text-zinc-600 hover:bg-zinc-200/70 hover:text-zinc-900 active:scale-95 transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+            title="Align Right"
+          >
+            <AlignRight className="h-4 w-4" />
+          </button>
+
+          <div className="h-4 w-[1px] bg-zinc-200 mx-1" />
+
+          {/* Media & Inserts */}
+          <button
+            type="button"
+            onClick={handleAddLink}
+            disabled={isSourceMode}
+            className="p-1.5 rounded-lg text-zinc-600 hover:bg-zinc-200/70 hover:text-zinc-900 active:scale-95 transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
             title="Insert Link"
-            className="p-1.5 sm:px-2 sm:py-1 rounded-lg hover:bg-zinc-200/70 text-zinc-700 hover:text-zinc-900 transition-colors text-xs"
           >
-            🔗 Link
+            <LinkIcon className="h-4 w-4" />
           </button>
           <button
             type="button"
-            onClick={() => insertAtLineStart("\n---\n")}
-            title="Horizontal Divider"
-            className="p-1.5 sm:px-2 sm:py-1 rounded-lg hover:bg-zinc-200/70 text-zinc-700 hover:text-zinc-900 transition-colors text-xs"
+            onClick={handleAddImage}
+            disabled={isSourceMode}
+            className="p-1.5 rounded-lg text-zinc-600 hover:bg-zinc-200/70 hover:text-zinc-900 active:scale-95 transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+            title="Insert Image by URL"
           >
-            — Divider
+            <ImageIcon className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => exec("insertHorizontalRule")}
+            disabled={isSourceMode}
+            className="p-1.5 rounded-lg text-zinc-600 hover:bg-zinc-200/70 hover:text-zinc-900 active:scale-95 transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+            title="Horizontal Divider"
+          >
+            <Minus className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => exec("removeFormat")}
+            disabled={isSourceMode}
+            className="p-1.5 rounded-lg text-zinc-600 hover:bg-zinc-200/70 hover:text-zinc-900 active:scale-95 transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+            title="Clear Formatting"
+          >
+            <RemoveFormatting className="h-4 w-4" />
+          </button>
+
+          <div className="h-4 w-[1px] bg-zinc-200 mx-1" />
+
+          {/* Undo / Redo */}
+          <button
+            type="button"
+            onClick={() => exec("undo")}
+            disabled={isSourceMode}
+            className="p-1.5 rounded-lg text-zinc-600 hover:bg-zinc-200/70 hover:text-zinc-900 active:scale-95 transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+            title="Undo"
+          >
+            <RotateCcw className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => exec("redo")}
+            disabled={isSourceMode}
+            className="p-1.5 rounded-lg text-zinc-600 hover:bg-zinc-200/70 hover:text-zinc-900 active:scale-95 transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+            title="Redo"
+          >
+            <RotateCw className="h-4 w-4" />
           </button>
         </div>
 
-        {/* View Mode Switcher */}
-        <div className="flex items-center gap-1 bg-zinc-200/70 p-1 rounded-xl">
+        {/* Visual vs HTML Mode Switcher */}
+        <div className="flex items-center bg-zinc-200/70 p-0.5 rounded-xl border border-zinc-200">
           <button
             type="button"
-            onClick={() => setActiveTab("write")}
-            className={`px-3 py-1 rounded-lg text-xs font-['Manrope'] font-semibold transition-all ${
-              activeTab === "write"
+            onClick={() => {
+              if (isSourceMode) handleToggleSource();
+            }}
+            className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              !isSourceMode
                 ? "bg-[#199250] text-white shadow-xs"
                 : "text-zinc-600 hover:text-zinc-900"
             }`}
+            title="Switch to Visual WYSIWYG Mode"
           >
-            Write
+            <Eye className="h-3.5 w-3.5" />
+            <span>Visual</span>
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab("preview")}
-            className={`px-3 py-1 rounded-lg text-xs font-['Manrope'] font-semibold transition-all ${
-              activeTab === "preview"
+            onClick={() => {
+              if (!isSourceMode) handleToggleSource();
+            }}
+            className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              isSourceMode
                 ? "bg-[#199250] text-white shadow-xs"
                 : "text-zinc-600 hover:text-zinc-900"
             }`}
+            title="Switch to HTML Source Code Mode"
           >
-            Live Preview
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("split")}
-            className={`hidden md:block px-3 py-1 rounded-lg text-xs font-['Manrope'] font-semibold transition-all ${
-              activeTab === "split"
-                ? "bg-[#199250] text-white shadow-xs"
-                : "text-zinc-600 hover:text-zinc-900"
-            }`}
-          >
-            Split View
+            <Code className="h-3.5 w-3.5" />
+            <span>HTML</span>
           </button>
         </div>
       </div>
 
       {/* Editor Body */}
-      <div className="relative w-full flex-1 flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-zinc-200">
-        {/* Write Pane */}
-        {(activeTab === "write" || activeTab === "split") && (
-          <div className="w-full flex-1 flex flex-col">
-            <textarea
-              ref={textareaRef}
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
-              placeholder={placeholder}
-              style={{ minHeight }}
-              className="w-full h-full p-4 sm:p-5 bg-white text-zinc-900 placeholder:text-zinc-400 focus:outline-none font-mono text-sm leading-relaxed resize-y"
-            />
-          </div>
-        )}
+      {isSourceMode ? (
+        <textarea
+          value={htmlSource}
+          onChange={handleSourceChange}
+          placeholder="Edit raw HTML source code here..."
+          className="w-full p-5 bg-white text-zinc-800 font-mono text-xs sm:text-sm focus:outline-none resize-y leading-relaxed selection:bg-emerald-100 selection:text-emerald-900 placeholder:text-zinc-400"
+          style={{ minHeight }}
+        />
+      ) : (
+        <div
+          ref={editorRef}
+          contentEditable
+          onInput={handleInput}
+          onKeyDown={handleKeyDown}
+          data-placeholder={placeholder}
+          className="p-5 bg-white text-zinc-900 text-sm focus:outline-none overflow-y-auto leading-relaxed max-w-none empty:before:content-[attr(data-placeholder)] empty:before:text-zinc-400 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:text-zinc-900 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-3 [&_h3]:mb-1.5 [&_h3]:text-zinc-900 [&_h4]:text-base [&_h4]:font-semibold [&_h4]:mt-2 [&_h4]:mb-1 [&_h4]:text-zinc-800 [&_p]:mb-3 [&_p]:text-zinc-700 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-3 [&_ul]:text-zinc-700 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-3 [&_ol]:text-zinc-700 [&_blockquote]:border-l-4 [&_blockquote]:border-[#199250] [&_blockquote]:bg-emerald-50/60 [&_blockquote]:rounded-r-xl [&_blockquote]:py-2 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-zinc-700 [&_blockquote]:my-3 [&_pre]:bg-zinc-50 [&_pre]:border [&_pre]:border-zinc-200 [&_pre]:text-emerald-800 [&_pre]:p-4 [&_pre]:rounded-xl [&_pre]:font-mono [&_pre]:text-xs [&_pre]:my-3 [&_a]:text-[#199250] [&_a]:underline [&_a]:font-medium [&_a:hover]:text-[#055027] [&_img]:rounded-xl [&_img]:max-h-72 [&_img]:my-3 [&_img]:border [&_img]:border-zinc-200 [&_hr]:border-zinc-200 [&_hr]:my-4"
+          style={{ minHeight }}
+        />
+      )}
 
-        {/* Preview Pane */}
-        {(activeTab === "preview" || activeTab === "split") && (
-          <div
-            style={{ minHeight }}
-            className="w-full flex-1 p-4 sm:p-6 overflow-y-auto bg-zinc-50/50 text-zinc-800 max-w-none font-['Manrope']"
-            dangerouslySetInnerHTML={{ __html: parseMarkdownToHtml(value) }}
-          />
-        )}
-      </div>
-
-      {/* Bottom Status Bar */}
-      <div className="px-4 py-2 bg-zinc-50 border-t border-zinc-200 flex items-center justify-between text-xs text-zinc-500 font-['Manrope']">
-        <div className="flex items-center gap-4">
+      {/* Editor Footer Status */}
+      <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-50/90 border-t border-zinc-200/80 text-[11px] text-zinc-500 font-['Manrope']">
+        <div className="flex items-center gap-3">
           <span>
             <strong className="text-zinc-800 font-semibold">{wordCount}</strong> words
           </span>
+          <span>•</span>
           <span>
             <strong className="text-zinc-800 font-semibold">{charCount}</strong> characters
           </span>
-          <span className="hidden sm:inline">
-            ~<strong className="text-zinc-800 font-semibold">{readTime}</strong> min read
+        </div>
+        <div>
+          <span className="text-zinc-600 font-mono text-[10px] bg-zinc-200/70 px-2.5 py-0.5 rounded-md font-medium">
+            {isSourceMode ? "HTML Source Mode" : "WYSIWYG Visual Mode"}
           </span>
         </div>
-        <span className="text-[11px] text-zinc-400 hidden sm:inline">
-          Markdown &amp; HTML supported
-        </span>
       </div>
     </div>
   );
