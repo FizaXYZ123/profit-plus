@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { IMAGES } from "@/constants/export";
+import { API_ENDPOINTS } from "@/constants/endpoints";
 import CountrySelector from "@/components/CountrySelector";
 import { getCountry } from "@/constants/countries";
 
@@ -10,6 +11,7 @@ export default function ContactUs() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    referralCode: "",
     countryCode: "+1",
     countryIso: "US",
     phone: "",
@@ -24,11 +26,9 @@ export default function ContactUs() {
 
   // Handle phone change - only digits allowed, capped strictly at current country's max digits
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const digitsOnly = e.target.value.replace(/\D/g, "");
-    if (digitsOnly.length <= currentCountry.maxLength) {
-      setFormData((prev) => ({ ...prev, phone: digitsOnly }));
-      if (error) setError(null);
-    }
+    const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, currentCountry.maxLength);
+    setFormData((prev) => ({ ...prev, phone: digitsOnly }));
+    if (error) setError(null);
   };
 
   const handlePhoneKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -65,6 +65,7 @@ export default function ContactUs() {
 
     const trimmedName = formData.name.trim();
     const trimmedEmail = formData.email.trim();
+    const trimmedReferral = formData.referralCode.trim();
     const trimmedPhone = formData.phone.trim();
     const trimmedMessage = formData.message.trim();
 
@@ -101,7 +102,7 @@ export default function ContactUs() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/contact-us", {
+      const res = await fetch(API_ENDPOINTS.CONTACT_US, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -109,6 +110,7 @@ export default function ContactUs() {
         body: JSON.stringify({
           name: trimmedName,
           email: trimmedEmail,
+          referralCode: trimmedReferral || null,
           countryCode: formData.countryCode,
           phone: trimmedPhone,
           message: trimmedMessage,
@@ -130,6 +132,7 @@ export default function ContactUs() {
         setFormData({
           name: "",
           email: "",
+          referralCode: "",
           countryCode: "+1",
           countryIso: "US",
           phone: "",
@@ -160,23 +163,23 @@ export default function ContactUs() {
         />
       </div>
 
-      {/* 2. Curved PC Monitor at Bottom Left (Behind Candlesticks - z-5) */}
-      <div className="absolute bottom-2 sm:bottom-3 left-0 sm:left-2 w-44 sm:w-56 md:w-72 h-auto pointer-events-none select-none z-5">
-        <Image
-          src={IMAGES.curvedMonitor}
-          alt="Trading Monitor Display"
-          width={320}
-          height={200}
-          className="w-full h-auto object-contain block drop-shadow-sm"
-          priority
-          unoptimized
-        />
-      </div>
+      {/* 2. Decorative Side Graphics (Constrained to max-w-7xl container so they stay fixed and frame the contact form on wide screens) */}
+      <div className="absolute inset-0 max-w-7xl mx-auto pointer-events-none select-none z-10 overflow-hidden">
+        {/* Curved PC Monitor at Bottom Left (Behind Candlesticks - z-5) */}
+        <div className="absolute bottom-2 sm:bottom-3 left-0 sm:left-0 w-44 sm:w-56 md:w-72 h-auto z-5">
+          <Image
+            src={IMAGES.curvedMonitor}
+            alt="Trading Monitor Display"
+            width={320}
+            height={200}
+            className="w-full h-auto object-contain block drop-shadow-sm"
+            priority
+            unoptimized
+          />
+        </div>
 
-      {/* 3. Candlestick Chart Trend Line (IN FRONT OF PC Monitor - z-15) */}
-      <div className="absolute inset-0 pointer-events-none select-none z-15 overflow-hidden">
-        {/* Candlesticks starting on top of/in front of the PC monitor screen */}
-        <div className="absolute bottom-1 sm:bottom-2 left-0 w-[420px] sm:w-[580px] md:w-[680px] h-[360px] sm:h-[460px] md:h-[520px] opacity-95">
+        {/* Candlesticks starting on top of/in front of the PC monitor screen (z-15) */}
+        <div className="absolute bottom-1 sm:bottom-2 left-0 w-[420px] sm:w-[580px] md:w-[680px] h-[360px] sm:h-[460px] md:h-[520px] opacity-95 z-15">
           <Image
             src={IMAGES.candlestickChart}
             alt=""
@@ -185,8 +188,9 @@ export default function ContactUs() {
             priority
           />
         </div>
-        {/* Rising Candlesticks on the right */}
-        <div className="absolute top-0 -right-6 w-[360px] sm:w-[480px] md:w-[540px] h-[360px] sm:h-[460px] md:h-[520px] opacity-95">
+
+        {/* Rising Candlesticks on the right (z-15) */}
+        <div className="absolute top-0 -right-6 w-[360px] sm:w-[480px] md:w-[540px] h-[360px] sm:h-[460px] md:h-[520px] opacity-95 z-15">
           <Image
             src={IMAGES.candlestickChart}
             alt=""
@@ -205,7 +209,17 @@ export default function ContactUs() {
         </h2>
 
         {/* Contact Form Card: Compact and Proportionate */}
-        <div className="w-full max-w-[460px] rounded-[28px] sm:rounded-[32px] bg-white p-6 sm:p-8 shadow-xl relative z-20">
+        <div className="w-full max-w-[460px] rounded-[28px] sm:rounded-[32px] bg-white p-6 sm:p-8 shadow-xl relative z-20 overflow-hidden">
+          {/* Form Submission Overlay Loading */}
+          {loading && (
+            <div className="absolute inset-0 bg-white/85 backdrop-blur-[2px] z-30 flex flex-col items-center justify-center gap-3 animate-[fadeIn_0.2s_ease-out]">
+              <div className="w-10 h-10 border-3 border-[#055027]/25 border-t-[#055027] rounded-full animate-spin" />
+              <p className="font-['Outfit'] font-bold text-sm text-[#055027]">
+                Submitting your message...
+              </p>
+            </div>
+          )}
+
           {submitted ? (
             <div className="py-8 text-center">
               <div className="w-12 h-12 rounded-full bg-[#055027]/15 text-[#055027] flex items-center justify-center mx-auto mb-3 text-xl font-bold">
@@ -337,6 +351,26 @@ export default function ContactUs() {
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* Referral Code (Optional) */}
+              <div className="mt-3 sm:mt-3.5">
+                <label
+                  htmlFor="contact-referral"
+                  className="font-['Outfit'] font-bold text-xs sm:text-[13px] text-zinc-900 block mb-1"
+                >
+                  Referral Code <span className="font-normal text-zinc-400 text-[11px]">(Optional)</span>
+                </label>
+                <input
+                  id="contact-referral"
+                  type="text"
+                  value={formData.referralCode}
+                  onChange={(e) =>
+                    setFormData({ ...formData, referralCode: e.target.value })
+                  }
+                  className="w-full rounded-[12px] bg-[#f0f0f0] border-0 px-3.5 py-2 sm:py-2.5 text-zinc-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#055027]/40 placeholder:text-zinc-400"
+                  placeholder="Enter referral code"
+                />
               </div>
 
               {/* Message */}

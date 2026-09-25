@@ -27,6 +27,7 @@ export const metadata: Metadata = {
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import WebsiteLoader from "@/components/WebsiteLoader";
 
 export default function RootLayout({
   children,
@@ -39,6 +40,9 @@ export default function RootLayout({
       className={`${outfit.variable} ${manrope.variable} scroll-smooth antialiased`}
     >
       <body className="min-h-screen bg-white text-white flex flex-col font-['Manrope'] selection:bg-[#199250] selection:text-white">
+        {/* Website Open Loading Overlay */}
+        <WebsiteLoader />
+
         {/* Persistent Floating Navbar */}
         <Navbar />
 

@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { IMAGES } from "@/constants/export";
+import BookDemoModal from "@/components/BookDemoModal";
 
 export default function AboutSoftwareHero() {
+  const [demoModalOpen, setDemoModalOpen] = useState(false);
   return (
     <section className="relative min-h-[560px] sm:min-h-[640px] md:min-h-[700px] pt-28 sm:pt-36 md:pt-40 pb-0 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-between overflow-hidden bg-[#032010]">
       {/* Ambient subtle emerald glow */}
@@ -17,31 +18,34 @@ export default function AboutSoftwareHero() {
         }}
       />
 
-      {/* Left Side Candlestick Chart (candle-softwear2.png) */}
-      <div className="absolute -left-2 sm:left-0 md:left-2 top-4 sm:top-6 md:top-8 bottom-10 sm:bottom-14 md:bottom-18 w-[160px] sm:w-[240px] md:w-[320px] lg:w-[400px] xl:w-[440px] pointer-events-none select-none z-10">
-        <div className="relative w-full h-full">
-          <Image
-            src={IMAGES.candleSoftware2}
-            alt="Candlestick Chart Downtrend"
-            fill
-            className="object-contain object-left-bottom"
-            priority
-            unoptimized
-          />
+      {/* Candlesticks Decorative Wrapper (Constrained to max-w-7xl container so they stay fixed and frame the content on wide screens) */}
+      <div className="absolute inset-0 max-w-7xl mx-auto pointer-events-none select-none z-10">
+        {/* Left Side Candlestick Chart (candle-softwear2.png) */}
+        <div className="absolute left-0 sm:left-2 lg:left-4 top-12 sm:top-16 md:top-20 bottom-8 sm:bottom-12 md:bottom-16 w-[150px] sm:w-[220px] md:w-[280px] lg:w-[340px] xl:w-[380px]">
+          <div className="relative w-full h-full">
+            <Image
+              src={IMAGES.candleSoftware2}
+              alt="Candlestick Chart Downtrend"
+              fill
+              className="object-contain object-left-bottom"
+              priority
+              unoptimized
+            />
+          </div>
         </div>
-      </div>
 
-      {/* Right Side Candlestick Chart (candle-softwear.png) */}
-      <div className="absolute -right-2 sm:right-0 md:right-2 lg:right-4 top-10 sm:top-16 md:top-24 -bottom-6 sm:-bottom-10 md:-bottom-12 w-[180px] sm:w-[260px] md:w-[340px] lg:w-[420px] xl:w-[460px] pointer-events-none select-none z-10">
-        <div className="relative w-full h-full">
-          <Image
-            src={IMAGES.candleSoftware}
-            alt="Candlestick Chart Uptrend"
-            fill
-            className="object-contain object-right-bottom"
-            priority
-            unoptimized
-          />
+        {/* Right Side Candlestick Chart (candle-softwear.png) */}
+        <div className="absolute right-0 sm:right-2 lg:right-4 top-12 sm:top-16 md:top-20 bottom-8 sm:bottom-12 md:bottom-16 w-[150px] sm:w-[220px] md:w-[280px] lg:w-[340px] xl:w-[380px]">
+          <div className="relative w-full h-full">
+            <Image
+              src={IMAGES.candleSoftware}
+              alt="Candlestick Chart Uptrend"
+              fill
+              className="object-contain object-right-bottom"
+              priority
+              unoptimized
+            />
+          </div>
         </div>
       </div>
 
@@ -59,12 +63,13 @@ export default function AboutSoftwareHero() {
 
         {/* Book a Demo Button */}
         <div className="mt-4 sm:mt-5 md:mt-6">
-          <Link
-            href="/contact"
-            className="inline-flex items-center justify-center font-['Manrope'] font-bold text-xs sm:text-sm text-white px-7 sm:px-8 py-2.5 sm:py-3 rounded-full bg-[#199250] hover:bg-[#055027] active:scale-95 transition-all duration-200 shadow-md shadow-[#199250]/40 hover:shadow-[#055027]/50"
+          <button
+            type="button"
+            onClick={() => setDemoModalOpen(true)}
+            className="inline-flex items-center justify-center font-['Manrope'] font-bold text-xs sm:text-sm text-white px-7 sm:px-8 py-2.5 sm:py-3 rounded-full bg-[#199250] hover:bg-[#055027] active:scale-95 transition-all duration-200 shadow-md shadow-[#199250]/40 hover:shadow-[#055027]/50 cursor-pointer"
           >
             Book a Demo
-          </Link>
+          </button>
         </div>
       </div>
 
@@ -80,6 +85,12 @@ export default function AboutSoftwareHero() {
           unoptimized
         />
       </div>
+
+      {/* Book a Demo Modal */}
+      <BookDemoModal
+        isOpen={demoModalOpen}
+        onClose={() => setDemoModalOpen(false)}
+      />
     </section>
   );
 }

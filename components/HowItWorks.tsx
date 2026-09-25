@@ -19,8 +19,8 @@ export default function HowItWorks() {
             return (
               <div
                 key={card.id}
-                className="relative rounded-[22px] min-h-[200px] flex flex-col justify-between p-6 pb-20 overflow-hidden transition-transform duration-200 hover:-translate-y-1"
-                style={{ backgroundColor: card.bgColor }}
+                className="relative rounded-t-[22px] rounded-bl-[22px] rounded-br-none min-h-[305px] flex flex-col justify-between p-6 pb-20 border-0 border-white outline-none transition-transform duration-200 hover:-translate-y-1"
+                style={{ backgroundColor: card.bgColor, borderRadius: "22px 22px 0 22px" }}
               >
                 {/* Text Content */}
                 <div className="relative z-10">
@@ -34,7 +34,7 @@ export default function HowItWorks() {
 
                 {/* Seamless White SVG Cutout: Complete bleed past card bottom-right to eliminate any green crescent */}
                 <svg
-                  className="absolute -bottom-2 -right-2 w-[100px] h-[100px] pointer-events-none z-10"
+                  className="absolute -bottom-2 -right-2 w-[100px] h-[100px] pointer-events-none z-10 overflow-visible"
                   viewBox="0 0 100 100"
                   fill="none"
                 >
